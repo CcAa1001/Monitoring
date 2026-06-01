@@ -3,11 +3,11 @@ part of 'desktop_shell_screen_v2.dart';
 class DesktopPanel extends StatelessWidget {
   const DesktopPanel({
     super.key,
-    required this.title,
+    this.title,
     required this.child,
   });
 
-  final String title;
+  final String? title;
   final Widget child;
 
   @override
@@ -23,11 +23,13 @@ class DesktopPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF1F2533)),
-          ),
-          const SizedBox(height: 14),
+          if ((title ?? '').isNotEmpty) ...<Widget>[
+            Text(
+              title!,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF1F2533)),
+            ),
+            const SizedBox(height: 14),
+          ],
           child,
         ],
       ),

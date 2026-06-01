@@ -29,8 +29,13 @@ class MockInventoryRepository implements InventoryRepository {
           category: 'Mechanical',
           currentLocation: 'RACK 2B',
           status: ItemStatus.available,
+          serialNumber: 'TW-2401-A',
+          brand: 'Tekiro',
+          model: 'TW-120',
+          condition: 'Good',
+          notes: 'Calibrated for general line maintenance.',
         ),
-        const Item(
+        Item(
           id: '2',
           qrCode: 'EQ-0002',
           name: 'Digital Caliper',
@@ -38,6 +43,12 @@ class MockInventoryRepository implements InventoryRepository {
           currentLocation: 'LINE 6',
           status: ItemStatus.borrowed,
           lastBorrowerName: 'Rizky',
+          serialNumber: 'CAL-9002',
+          brand: 'Mitutoyo',
+          model: 'CD-6',
+          condition: 'Needs check',
+          notes: 'Verify zero point before the next issue.',
+          expectedReturnAt: DateTime(2026, 4, 29),
         ),
         const Item(
           id: '3',
@@ -46,6 +57,10 @@ class MockInventoryRepository implements InventoryRepository {
           category: 'Fixture',
           currentLocation: 'RACK 5A',
           status: ItemStatus.available,
+          serialNumber: 'SC-1138',
+          brand: 'Generic',
+          model: 'Clamp-L',
+          condition: 'Good',
         ),
       ],
       movements: <MovementRecord>[
@@ -128,6 +143,7 @@ class MockInventoryRepository implements InventoryRepository {
     required String borrowerName,
     required String destinationLine,
     String? description,
+    DateTime? expectedReturnAt,
   }) async {
     final index = _items.indexWhere((element) => element.id == item.id);
     if (index == -1) return;
@@ -136,6 +152,7 @@ class MockInventoryRepository implements InventoryRepository {
       currentLocation: destinationLine,
       status: ItemStatus.borrowed,
       lastBorrowerName: borrowerName,
+      expectedReturnAt: expectedReturnAt,
     );
 
     _items[index] = updatedItem;
@@ -407,7 +424,8 @@ class MockInventoryRepository implements InventoryRepository {
     final updatedItem = item.copyWith(
       currentLocation: rackLocation,
       status: ItemStatus.available,
-      lastBorrowerName: returnerName,
+      clearLastBorrowerName: true,
+      clearExpectedReturnAt: true,
     );
 
     _items[index] = updatedItem;

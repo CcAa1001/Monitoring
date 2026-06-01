@@ -12,6 +12,7 @@ import '../../models/item.dart';
 import '../../models/item_category.dart';
 import '../../models/movement_record.dart';
 import '../../models/pairing_session.dart';
+import '../../services/inventory_report_service.dart';
 import '../scan/scan_screen.dart';
 import '../workflow/action_flow_screen.dart';
 import '../workflow/transaction_queue_screen.dart';
@@ -19,6 +20,7 @@ import '../workflow/transaction_queue_screen.dart';
 part 'desktop_dashboard_overview_page.dart';
 part 'desktop_borrow_page.dart';
 part 'desktop_return_page.dart';
+part 'desktop_reports_page.dart';
 part 'desktop_history_page.dart';
 part 'desktop_items_page.dart';
 part 'desktop_categories_page.dart';
@@ -45,6 +47,7 @@ enum DesktopMenuV2 {
   dashboard,
   borrow,
   returnItem,
+  reports,
   history,
   items,
   categories,
@@ -76,6 +79,7 @@ class DesktopShellScreen extends StatefulWidget {
 
 class _DesktopShellScreenState extends State<DesktopShellScreen> {
   DesktopMenuV2 _selectedMenu = DesktopMenuV2.dashboard;
+  bool _isSidebarCollapsed = false;
   bool _isLoading = true;
   String? _loadError;
   PairingSession? _pairingSession;
@@ -88,15 +92,15 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
   final List<_RoleDefinition> _roles = <_RoleDefinition>[
     const _RoleDefinition(
       name: 'Admin',
-      permissions: <String>['Dashboard', 'Borrow', 'Return', 'History', 'Items', 'Categories', 'Locations', 'Roles', 'Users'],
+      permissions: <String>['Dashboard', 'Borrow', 'Return', 'Reports', 'History', 'Items', 'Categories', 'Locations', 'Roles', 'Users'],
     ),
     const _RoleDefinition(
       name: 'Operator',
-      permissions: <String>['Dashboard', 'Borrow', 'Return', 'History', 'Items'],
+      permissions: <String>['Dashboard', 'Borrow', 'Return', 'Reports', 'History', 'Items'],
     ),
     const _RoleDefinition(
       name: 'Viewer',
-      permissions: <String>['Dashboard', 'History'],
+      permissions: <String>['Dashboard', 'Reports', 'History'],
     ),
   ];
   String? _lastAutoOpenedPairSignature;
@@ -107,6 +111,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
         DesktopMenuV2.dashboard,
         DesktopMenuV2.borrow,
         DesktopMenuV2.returnItem,
+        DesktopMenuV2.reports,
         DesktopMenuV2.history,
         DesktopMenuV2.items,
         DesktopMenuV2.categories,
@@ -509,52 +514,168 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? const Color(0xFF0F1220) : const Color(0xFFF7F8FC);
-    final sidebarBg = isDark ? const Color(0xFF171B2D) : Colors.white;
+    final sidebarBg = isDark ? const Color(0xFF151A2B) : const Color(0xFFFFFFFF);
+    final sidebarWidth = _isSidebarCollapsed ? 104.0 : 298.0;
 
     return Scaffold(
       body: Row(
         children: <Widget>[
           Container(
-            width: 270,
-            color: sidebarBg,
+            width: sidebarWidth,
+            decoration: BoxDecoration(
+              color: sidebarBg,
+              border: Border(
+                right: BorderSide(
+                  color: isDark ? const Color(0xFF202741) : const Color(0xFFE8ECF5),
+                ),
+              ),
+            ),
             padding: const EdgeInsets.fromLTRB(18, 20, 18, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  'Factory\nMonitoring',
-                  style: TextStyle(
-                    color: isDark ? Colors.white : const Color(0xFF1F2533),
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    height: 1.05,
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(_isSidebarCollapsed ? 10 : 18),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: <Color>[Color(0xFF6D52F5), Color(0xFF4E35D8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: const Color(0xFF5B39EA).withValues(alpha: 0.22),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                const SizedBox(height: 24),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        'MAIN MENU',
-                        style: TextStyle(
-                          color: isDark ? const Color(0xFF9FA8BF) : const Color(0xFF9197B3),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.2,
+                  child: _isSidebarCollapsed
+                      ? Column(
+                          children: <Widget>[
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isSidebarCollapsed = false;
+                                });
+                              },
+                              icon: const Icon(Icons.menu_open_rounded, color: Colors.white),
+                              tooltip: 'Expand sidebar',
+                            ),
+                            const SizedBox(height: 12),
+                            const CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Color(0x33FFFFFF),
+                              child: Text(
+                                'M',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            IconButton(
+                              onPressed: widget.onToggleTheme,
+                              icon: Icon(
+                                widget.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                color: Colors.white,
+                              ),
+                              tooltip: 'Toggle theme',
+                            ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      const Text(
+                                        'Monitoring hub',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.w800,
+                                          height: 1.05,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        DateFormat('EEEE, dd MMM yyyy').format(DateTime.now()),
+                                        style: const TextStyle(
+                                          color: Color(0xFFE9E2FF),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _isSidebarCollapsed = true;
+                                        });
+                                      },
+                                      icon: const Icon(Icons.menu_open_rounded, color: Colors.white),
+                                      tooltip: 'Collapse sidebar',
+                                    ),
+                                    IconButton(
+                                      onPressed: widget.onToggleTheme,
+                                      icon: Icon(
+                                        widget.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                        color: Colors.white,
+                                      ),
+                                      tooltip: 'Toggle theme',
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 18),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Row(
+                                children: <Widget>[
+                                  Icon(Icons.space_dashboard_rounded, color: Colors.white, size: 18),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Desktop control center',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: widget.onToggleTheme,
-                      icon: Icon(
-                        widget.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                        color: isDark ? const Color(0xFFB3BCD4) : const Color(0xFF9197B3),
-                      ),
-                    ),
-                  ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 24),
+                if (!_isSidebarCollapsed)
+                  Text(
+                    'MAIN MENU',
+                    style: TextStyle(
+                      color: isDark ? const Color(0xFF9FA8BF) : const Color(0xFF9197B3),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                if (!_isSidebarCollapsed) const SizedBox(height: 10),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -565,6 +686,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                   selected: _selectedMenu == menu,
                                   label: _menuLabel(menu),
                                   icon: _menuIcon(menu),
+                                  collapsed: _isSidebarCollapsed,
                                   onTap: () {
                                     setState(() {
                                       _selectedMenu = menu;
@@ -577,26 +699,34 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: _confirmLogout,
-                  icon: const Icon(Icons.logout_rounded),
-                  label: const Text('Log out'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(46),
-                    alignment: Alignment.centerLeft,
-                    side: BorderSide(
-                      color: isDark ? const Color(0xFF303854) : const Color(0xFFD8DDEA),
-                    ),
-                    foregroundColor: isDark ? Colors.white : const Color(0xFF1F2533),
-                  ),
-                ),
+                _isSidebarCollapsed
+                    ? Center(
+                        child: IconButton(
+                          onPressed: _confirmLogout,
+                          icon: const Icon(Icons.logout_rounded),
+                          tooltip: 'Log out',
+                        ),
+                      )
+                    : OutlinedButton.icon(
+                        onPressed: _confirmLogout,
+                        icon: const Icon(Icons.logout_rounded),
+                        label: const Text('Log out'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(46),
+                          alignment: Alignment.centerLeft,
+                          side: BorderSide(
+                            color: isDark ? const Color(0xFF303854) : const Color(0xFFD8DDEA),
+                          ),
+                          foregroundColor: isDark ? Colors.white : const Color(0xFF1F2533),
+                        ),
+                      ),
               ],
             ),
           ),
           Expanded(
             child: Container(
               color: bg,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(24, 24, 28, 28),
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _loadError != null
@@ -607,13 +737,37 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                       : Column(
                           children: <Widget>[
                             _DesktopTopBar(
+                              pageTitle: _menuLabel(_selectedMenu),
                               user: _displayUser,
-                              themeMode: widget.themeMode,
-                              onToggleTheme: widget.onToggleTheme,
                               onOpenProfileMenu: _openProfileMenu,
                             ),
                             const SizedBox(height: 20),
-                            Expanded(child: _buildContent(context)),
+                            Expanded(
+                              child: Center(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(maxWidth: 1400),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.fromLTRB(22, 22, 22, 24),
+                                    decoration: BoxDecoration(
+                                      color: isDark ? const Color(0xFF151A2B) : const Color(0xFFFFFFFF),
+                                      borderRadius: BorderRadius.circular(32),
+                                      border: Border.all(
+                                        color: isDark ? const Color(0xFF232A43) : const Color(0xFFE6EBF4),
+                                      ),
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.04),
+                                          blurRadius: 30,
+                                          offset: const Offset(0, 12),
+                                        ),
+                                      ],
+                                    ),
+                                    child: _buildContent(context),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
             ),
@@ -631,6 +785,8 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
         return 'Borrow';
       case DesktopMenuV2.returnItem:
         return 'Return';
+      case DesktopMenuV2.reports:
+        return 'Reports';
       case DesktopMenuV2.history:
         return 'History';
       case DesktopMenuV2.items:
@@ -656,6 +812,8 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
         return Icons.call_made_rounded;
       case DesktopMenuV2.returnItem:
         return Icons.assignment_return_rounded;
+      case DesktopMenuV2.reports:
+        return Icons.analytics_rounded;
       case DesktopMenuV2.history:
         return Icons.history_rounded;
       case DesktopMenuV2.items:
@@ -704,6 +862,12 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
           pairingSession: _pairingSession,
           onReturn: canTransact ? () => _openTransaction(WorkflowMode.returnItem) : null,
           role: widget.currentUser.role,
+        );
+      case DesktopMenuV2.reports:
+        return DesktopReportsPage(
+          items: _items,
+          movements: _movements,
+          users: _users,
         );
       case DesktopMenuV2.history:
         return DesktopHistoryPage(movements: _movements);

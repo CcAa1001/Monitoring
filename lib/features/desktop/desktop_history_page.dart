@@ -14,11 +14,13 @@ class DesktopHistoryPage extends StatefulWidget {
 
 class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _horizontalScrollController = ScrollController();
   String _filter = 'All';
 
   @override
   void dispose() {
     _searchController.dispose();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
@@ -66,7 +68,6 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
         ),
         const SizedBox(height: 18),
         DesktopPanel(
-          title: 'Movement log',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -113,35 +114,51 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
               const SizedBox(height: 18),
               SizedBox(
                 width: double.infinity,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 1200),
-                    child: DataTable(
-                      columns: const <DataColumn>[
-                        DataColumn(label: Text('Item name')),
-                        DataColumn(label: Text('QR')),
-                        DataColumn(label: Text('Initial location')),
-                        DataColumn(label: Text('Borrower')),
-                        DataColumn(label: Text('From')),
-                        DataColumn(label: Text('To')),
-                        DataColumn(label: Text('Time')),
-                        DataColumn(label: Text('Description')),
-                      ],
-                      rows: rows.map((record) {
-                        return DataRow(
-                          cells: <DataCell>[
-                            DataCell(Text(record.itemName)),
-                            DataCell(Text(record.itemQrCode)),
-                            DataCell(Text(record.fromLocation)),
-                            DataCell(Text(record.actorName)),
-                            DataCell(Text(record.fromLocation)),
-                            DataCell(Text(record.toLocation)),
-                            DataCell(Text(formatter.format(record.createdAt))),
-                            DataCell(Text(record.description ?? '-')),
-                          ],
-                        );
-                      }).toList(),
+                child: Scrollbar(
+                  controller: _horizontalScrollController,
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  notificationPredicate: (notification) => notification.metrics.axis == Axis.horizontal,
+                  child: SingleChildScrollView(
+                    controller: _horizontalScrollController,
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 1480),
+                      child: DataTable(
+                        columnSpacing: 24,
+                        columns: const <DataColumn>[
+                          DataColumn(label: Text('Item name')),
+                          DataColumn(label: Text('QR')),
+                          DataColumn(label: Text('Initial location')),
+                          DataColumn(label: Text('Borrower')),
+                          DataColumn(label: Text('From')),
+                          DataColumn(label: Text('To')),
+                          DataColumn(label: Text('Time')),
+                          DataColumn(label: Text('Description')),
+                        ],
+                        rows: rows.map((record) {
+                          return DataRow(
+                            cells: <DataCell>[
+                              DataCell(SizedBox(width: 170, child: Text(record.itemName))),
+                              DataCell(Text(record.itemQrCode)),
+                              DataCell(SizedBox(width: 120, child: Text(record.fromLocation))),
+                              DataCell(SizedBox(width: 140, child: Text(record.actorName))),
+                              DataCell(SizedBox(width: 120, child: Text(record.fromLocation))),
+                              DataCell(SizedBox(width: 120, child: Text(record.toLocation))),
+                              DataCell(SizedBox(width: 150, child: Text(formatter.format(record.createdAt)))),
+                              DataCell(
+                                SizedBox(
+                                  width: 280,
+                                  child: Text(
+                                    record.description ?? '-',
+                                    softWrap: true,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),

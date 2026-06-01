@@ -80,6 +80,7 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final payload = widget.payloadBuilder(_session.code);
     return Dialog(
       insetPadding: const EdgeInsets.all(32),
@@ -123,9 +124,11 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF7F8FC),
+                        color: isDark ? const Color(0xFF111726) : const Color(0xFFF7F8FC),
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: const Color(0xFFE2E8F5)),
+                        border: Border.all(
+                          color: isDark ? const Color(0xFF28314B) : const Color(0xFFE2E8F5),
+                        ),
                       ),
                       child: Column(
                         children: <Widget>[
@@ -173,8 +176,11 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEEF2FF),
+                            color: isDark ? const Color(0xFF111726) : const Color(0xFFEEF2FF),
                             borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF28314B) : Colors.transparent,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

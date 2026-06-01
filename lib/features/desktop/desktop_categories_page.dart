@@ -20,13 +20,15 @@ class DesktopCategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DesktopSimpleListPage<ItemCategory>(
       title: 'Categories',
-      subtitle: 'Manage category options used when registering and editing items.',
+      subtitle: 'Shape the naming system used when equipment is registered and maintained.',
       actionLabel: 'Add category',
       onAction: canManage ? onAdd : null,
       items: categories,
+      searchHint: 'Search category name or status',
+      searchText: (category) => '${category.name} ${category.isActive ? 'active' : 'inactive'}',
       itemBuilder: (category) => DesktopSimpleTile(
         title: category.name,
-        subtitle: 'Item category option',
+        subtitle: category.isActive ? 'Available for item registration' : 'Hidden from active registration flows',
         status: category.isActive ? 'Active' : 'Inactive',
         onEdit: canManage ? () => onEdit(category: category) : null,
         onDelete: canManage ? () => onDelete(category) : null,

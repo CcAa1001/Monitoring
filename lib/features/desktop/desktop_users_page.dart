@@ -20,13 +20,15 @@ class DesktopUsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DesktopSimpleListPage<AppUser>(
       title: 'Users',
-      subtitle: 'Manage roles and accounts for the terminal.',
+      subtitle: 'Control who can operate the desk, what they can change, and which accounts remain active.',
       actionLabel: 'Add user',
       onAction: canManage ? onAdd : null,
       items: users,
+      searchHint: 'Search name, badge ID, role, or status',
+      searchText: (user) => '${user.name} ${user.badgeId} ${user.role.name} ${user.isActive ? 'active' : 'inactive'}',
       itemBuilder: (user) => DesktopSimpleTile(
         title: user.name,
-        subtitle: '${user.badgeId} • ${user.role.name}',
+        subtitle: '${user.badgeId} | ${user.role.name}',
         status: user.isActive ? 'Active' : 'Inactive',
         onEdit: canManage ? () => onEdit(user: user) : null,
         onDelete: canManage ? () => onDelete(user) : null,

@@ -38,33 +38,26 @@ class SupabaseInventoryRepository implements InventoryRepository {
   @override
   Future<void> addItem(Item item) async {
     await _client.from('items').insert(<String, dynamic>{
-      'qr_code': item.qrCode,
-      'name': item.name,
-      'category': item.category,
-      'current_status': item.status == ItemStatus.borrowed ? 'borrowed' : 'available',
-      'current_location': item.currentLocation,
-      'last_borrower_name': item.lastBorrowerName,
+      ..._itemPayload(item),
       'created_at': DateTime.now().toIso8601String(),
       'updated_at': DateTime.now().toIso8601String(),
     });
+    await _writeAudit(action: 'create', entityType: 'item', entityId: item.id, summary: 'Registered ${item.name}');
   }
 
   @override
   Future<void> updateItem(Item item) async {
     await _client.from('items').update(<String, dynamic>{
-      'qr_code': item.qrCode,
-      'name': item.name,
-      'category': item.category,
-      'current_status': item.status == ItemStatus.borrowed ? 'borrowed' : 'available',
-      'current_location': item.currentLocation,
-      'last_borrower_name': item.lastBorrowerName,
+      ..._itemPayload(item),
       'updated_at': DateTime.now().toIso8601String(),
     }).eq('id', item.id);
+    await _writeAudit(action: 'update', entityType: 'item', entityId: item.id, summary: 'Updated ${item.name}');
   }
 
   @override
   Future<void> deleteItem(String itemId) async {
     await _client.from('items').delete().eq('id', itemId);
+    await _writeAudit(action: 'delete', entityType: 'item', entityId: itemId, summary: 'Deleted item $itemId');
   }
 
   @override
@@ -73,11 +66,13 @@ class SupabaseInventoryRepository implements InventoryRepository {
     required String borrowerName,
     required String destinationLine,
     String? description,
+    DateTime? expectedReturnAt,
   }) async {
     await _client.from('items').update(<String, dynamic>{
       'current_status': 'borrowed',
       'current_location': destinationLine,
       'last_borrower_name': borrowerName,
+      'expected_return_at': expectedReturnAt?.toIso8601String(),
       'updated_at': DateTime.now().toIso8601String(),
     }).eq('id', item.id);
 
@@ -89,6 +84,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'to_location': destinationLine,
       'description': description,
     });
+    await _writeAudit(action: 'borrow', entityType: 'item', entityId: item.id, summary: '${item.name} borrowed to $destinationLine');
   }
 
   @override
@@ -163,6 +159,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'name': category.name,
       'is_active': category.isActive,
     });
+    await _writeAudit(action: 'create', entityType: 'category', entityId: category.id, summary: 'Created ${category.name}');
   }
 
   @override
@@ -171,11 +168,13 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'name': category.name,
       'is_active': category.isActive,
     }).eq('id', category.id);
+    await _writeAudit(action: 'update', entityType: 'category', entityId: category.id, summary: 'Updated ${category.name}');
   }
 
   @override
   Future<void> deleteCategory(String categoryId) async {
     await _client.from('item_categories').delete().eq('id', categoryId);
+    await _writeAudit(action: 'delete', entityType: 'category', entityId: categoryId, summary: 'Deleted category $categoryId');
   }
 
   @override
@@ -185,6 +184,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'location_type': location.type == LocationType.line ? 'line' : 'rack',
       'is_active': location.isActive,
     });
+    await _writeAudit(action: 'create', entityType: 'location', entityId: location.id, summary: 'Created ${location.code}');
   }
 
   @override
@@ -194,11 +194,13 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'location_type': location.type == LocationType.line ? 'line' : 'rack',
       'is_active': location.isActive,
     }).eq('id', location.id);
+    await _writeAudit(action: 'update', entityType: 'location', entityId: location.id, summary: 'Updated ${location.code}');
   }
 
   @override
   Future<void> deleteLocation(String locationId) async {
     await _client.from('allowed_locations').delete().eq('id', locationId);
+    await _writeAudit(action: 'delete', entityType: 'location', entityId: locationId, summary: 'Deleted location $locationId');
   }
 
   @override
@@ -286,6 +288,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'role': user.role.name,
       'is_active': user.isActive,
     });
+    await _writeAudit(action: 'create', entityType: 'user', entityId: user.id, summary: 'Created ${user.name}');
   }
 
   @override
@@ -297,11 +300,13 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'role': user.role.name,
       'is_active': user.isActive,
     }).eq('id', user.id);
+    await _writeAudit(action: 'update', entityType: 'user', entityId: user.id, summary: 'Updated ${user.name}');
   }
 
   @override
   Future<void> deleteUser(String userId) async {
     await _client.from('app_users').delete().eq('id', userId);
+    await _writeAudit(action: 'delete', entityType: 'user', entityId: userId, summary: 'Deleted user $userId');
   }
 
   @override
@@ -410,6 +415,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'current_status': 'available',
       'current_location': rackLocation,
       'last_borrower_name': null,
+      'expected_return_at': null,
       'updated_at': DateTime.now().toIso8601String(),
     }).eq('id', item.id);
 
@@ -421,6 +427,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'to_location': rackLocation,
       'description': description,
     });
+    await _writeAudit(action: 'return', entityType: 'item', entityId: item.id, summary: '${item.name} returned to $rackLocation');
   }
 
   @override
@@ -511,7 +518,54 @@ class SupabaseInventoryRepository implements InventoryRepository {
           ? ItemStatus.borrowed
           : ItemStatus.available,
       lastBorrowerName: map['last_borrower_name'] as String?,
+      serialNumber: map['serial_number'] as String?,
+      brand: map['brand'] as String?,
+      model: map['model'] as String?,
+      condition: map['condition'] as String?,
+      imageUrl: map['image_url'] as String?,
+      manualUrl: map['manual_url'] as String?,
+      notes: map['notes'] as String?,
+      expectedReturnAt: DateTime.tryParse(map['expected_return_at'] as String? ?? ''),
+      createdAt: DateTime.tryParse(map['created_at'] as String? ?? ''),
+      updatedAt: DateTime.tryParse(map['updated_at'] as String? ?? ''),
     );
+  }
+
+  Map<String, dynamic> _itemPayload(Item item) {
+    return <String, dynamic>{
+      'qr_code': item.qrCode,
+      'name': item.name,
+      'category': item.category,
+      'current_status': item.status == ItemStatus.borrowed ? 'borrowed' : 'available',
+      'current_location': item.currentLocation,
+      'last_borrower_name': item.lastBorrowerName,
+      'serial_number': item.serialNumber,
+      'brand': item.brand,
+      'model': item.model,
+      'condition': item.condition,
+      'image_url': item.imageUrl,
+      'manual_url': item.manualUrl,
+      'notes': item.notes,
+      'expected_return_at': item.expectedReturnAt?.toIso8601String(),
+    };
+  }
+
+  Future<void> _writeAudit({
+    required String action,
+    required String entityType,
+    required String entityId,
+    required String summary,
+  }) async {
+    try {
+      await _client.from('audit_logs').insert(<String, dynamic>{
+        'action': action,
+        'entity_type': entityType,
+        'entity_id': entityId,
+        'summary': summary,
+      });
+    } catch (_) {
+      // Audit logging is best-effort until the production migration is applied.
+    }
   }
 
   PairingSessionStatus _mapSessionStatus(String? status) {

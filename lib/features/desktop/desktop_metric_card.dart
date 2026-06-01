@@ -26,7 +26,7 @@ class DesktopMetricCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           CircleAvatar(
-            backgroundColor: const Color(0xFFF0ECFF),
+            backgroundColor: isDark ? const Color(0xFF231B4A) : const Color(0xFFF0ECFF),
             foregroundColor: const Color(0xFF5B39EA),
             child: Icon(icon),
           ),

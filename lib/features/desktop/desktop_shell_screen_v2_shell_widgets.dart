@@ -5,38 +5,46 @@ class _SidebarItem extends StatelessWidget {
     required this.selected,
     required this.label,
     required this.icon,
+    required this.collapsed,
     required this.onTap,
   });
 
   final bool selected;
   final String label;
   final IconData icon;
+  final bool collapsed;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final idleColor = isDark ? const Color(0xFFB3BCD4) : const Color(0xFF9197B3);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            color: selected ? const Color(0xFF5B39EA) : Colors.transparent,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Row(
-            children: <Widget>[
-              Icon(icon, color: selected ? Colors.white : idleColor),
-              const SizedBox(width: 12),
-              Text(
-                label,
-                style: TextStyle(color: selected ? Colors.white : idleColor, fontWeight: FontWeight.w700),
-              ),
-            ],
+    return Tooltip(
+      message: collapsed ? label : '',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: collapsed ? 0 : 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: selected ? const Color(0xFF5B39EA) : Colors.transparent,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Row(
+              mainAxisAlignment: collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+              children: <Widget>[
+                Icon(icon, color: selected ? Colors.white : idleColor),
+                if (!collapsed) ...<Widget>[
+                  const SizedBox(width: 12),
+                  Text(
+                    label,
+                    style: TextStyle(color: selected ? Colors.white : idleColor, fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
       ),
@@ -104,15 +112,13 @@ class _LoadErrorState extends StatelessWidget {
 
 class _DesktopTopBar extends StatelessWidget {
   const _DesktopTopBar({
+    required this.pageTitle,
     required this.user,
-    required this.themeMode,
-    required this.onToggleTheme,
     required this.onOpenProfileMenu,
   });
 
+  final String pageTitle;
   final AppUser user;
-  final ThemeMode themeMode;
-  final VoidCallback onToggleTheme;
   final Future<void> Function() onOpenProfileMenu;
 
   @override
@@ -121,22 +127,28 @@ class _DesktopTopBar extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          child: Text(
-            _pageTitle(context),
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : const Color(0xFF1F2533),
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                pageTitle,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: isDark ? Colors.white : const Color(0xFF1F2533),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                DateFormat('EEEE, dd MMM yyyy').format(DateTime.now()),
+                style: TextStyle(
+                  color: isDark ? const Color(0xFF9FA8BF) : const Color(0xFF7E8698),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
-        IconButton(
-          onPressed: onToggleTheme,
-          icon: Icon(
-            themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-          ),
-        ),
-        const SizedBox(width: 10),
         InkWell(
           onTap: () => onOpenProfileMenu(),
           borderRadius: BorderRadius.circular(18),
@@ -145,6 +157,9 @@ class _DesktopTopBar extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: isDark ? const Color(0xFF252B42) : const Color(0xFFECEFF6),
+              ),
             ),
             child: Row(
               children: <Widget>[
@@ -178,11 +193,5 @@ class _DesktopTopBar extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _pageTitle(BuildContext context) {
-    final state = context.findAncestorStateOfType<_DesktopShellScreenState>();
-    if (state == null) return 'Dashboard';
-    return state._menuLabel(state._selectedMenu);
   }
 }

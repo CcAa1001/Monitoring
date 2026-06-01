@@ -16,61 +16,103 @@ class DesktopBorrowPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        const DesktopSectionHeader(
-          title: 'Borrow',
-          subtitle: 'Borrow items using the desktop camera or a paired phone scanner.',
+        _DesktopTransactionHero(
+          accentColors: const <Color>[Color(0xFF6D52F5), Color(0xFF4E35D8)],
+          badge: 'Borrow workspace',
+          title: 'Borrow items with a cleaner queue and clearer scanning choices.',
+          description:
+              'Start from the desk camera or a paired roaming phone, then send every scan into one structured borrow flow before choosing the destination line.',
+          primaryLabel: 'Open borrow queue',
+          primaryIcon: Icons.call_made_rounded,
+          primaryAction: onBorrow,
+          secondaryLabel: pairingSession == null ? 'Pair a phone on dashboard' : 'Phone is paired and ready',
+          secondaryIcon: Icons.phonelink_ring_rounded,
+          statusTitle: 'Borrow station',
+          statusValue: pairingSession == null ? 'Desk scanner only' : 'Phone-assisted',
         ),
         const SizedBox(height: 18),
-        DesktopPanel(
-          title: 'Borrow actions',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text('Choose how to start the borrow queue.'),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: <Widget>[
-                  SizedBox(
-                    width: 240,
-                    child: FilledButton.icon(
-                      onPressed: onBorrow,
-                      icon: const Icon(Icons.qr_code_scanner_rounded),
-                      label: const Text('Scan with PC camera'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              flex: 7,
+              child: DesktopPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const _DesktopTransactionPanelHeader(
+                      title: 'Choose how items enter the queue',
+                      caption: 'Both paths lead into the same borrow queue, so the desk can keep one clean review and submit step.',
                     ),
-                  ),
-                  SizedBox(
-                    width: 240,
-                    child: OutlinedButton.icon(
-                      onPressed: pairingSession == null ? null : onBorrow,
-                      icon: const Icon(Icons.phonelink_ring_rounded),
-                      label: const Text('Scan with phone camera'),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: _DesktopActionCard(
+                            title: 'Desk scanner',
+                            description: 'Best when items are handed directly to the equipment room. Fast, direct, and ideal for a fixed operator.',
+                            icon: Icons.qr_code_scanner_rounded,
+                            buttonLabel: 'Scan on this PC',
+                            onTap: onBorrow,
+                            primary: true,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _DesktopActionCard(
+                            title: 'Paired phone scanner',
+                            description: pairingSession == null
+                                ? 'Pair a phone first if you want roaming scans that still land in the same borrow queue.'
+                                : 'Phone ${pairingSession!.connectedDeviceName ?? 'scanner'} can move around the room and keep sending borrow scans back here.',
+                            icon: Icons.smartphone_rounded,
+                            buttonLabel: pairingSession == null ? 'Not paired yet' : 'Use paired phone',
+                            onTap: pairingSession == null ? null : onBorrow,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 18),
+                    const _DesktopProcessStrip(
+                      steps: <String>[
+                        'Scan item QR',
+                        'Review each row in queue',
+                        'Choose borrower line',
+                        'Confirm the borrow movement',
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 5,
+              child: DesktopPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const _DesktopTransactionPanelHeader(
+                      title: 'Pairing snapshot',
+                      caption: 'A paired phone can keep scanning while the desk reviews and submits the queue.',
+                    ),
+                    const SizedBox(height: 18),
+                    _DesktopPairingSummary(
+                      pairingSession: pairingSession,
+                      emptyMessage: 'No phone is paired right now. Start pairing from the dashboard to show the desktop QR and connect a roaming scanner.',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 18),
-        if (role == UserRole.viewer) ...<Widget>[
+        if (role == UserRole.viewer)
           const DesktopPanel(
-            title: 'Viewer access',
             child: Text(
-              'This account can monitor and review records, but cannot borrow items. Use an operator or admin account at the equipment-room desk for transactions.',
+              'This account can monitor and review borrow activity, but cannot start a borrow queue. Use an operator or admin account for transactions.',
             ),
           ),
-          const SizedBox(height: 18),
-        ],
-        DesktopPanel(
-          title: 'Pairing status',
-          child: Text(
-            pairingSession == null
-                ? 'No phone is paired right now. Create a pairing session on the dashboard to show a desktop QR.'
-                : 'Pair code: ${pairingSession!.code} • Device: ${pairingSession!.connectedDeviceName ?? 'waiting'} • Last scan: ${pairingSession!.lastScannedQr ?? '-'}',
-          ),
-        ),
       ],
     );
   }

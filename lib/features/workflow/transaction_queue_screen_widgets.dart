@@ -35,34 +35,38 @@ class _SessionBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: <Color>[Color(0xFFFFFFFF), Color(0xFFF8F6FF)],
+        gradient: LinearGradient(
+          colors: isDark
+              ? <Color>[const Color(0xFF111827), const Color(0xFF181B2F)]
+              : <Color>[Colors.white, const Color(0xFFF8F6FF)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFECEFF6)),
+        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             isBorrow ? 'Borrow queue' : 'Return queue',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF183A37),
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Desktop scans use ${currentUser.name}. Phone scans keep the paired mobile user name when they are submitted.',
-            style: const TextStyle(
+            style: TextStyle(
               height: 1.5,
-              color: Color(0xFF4D635F),
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 12),
@@ -107,21 +111,23 @@ class _ScanControlCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFECEFF6)),
+        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             isBorrow ? 'Scan items to borrow' : 'Scan items to return',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -156,7 +162,9 @@ class _BorrowQueueCard extends StatelessWidget {
     required this.drafts,
     required this.selectedLine,
     required this.lines,
+    required this.expectedReturnAt,
     required this.onLineSelected,
+    required this.onDueDateSelected,
     required this.onDescriptionChanged,
     required this.onRemove,
   });
@@ -164,18 +172,21 @@ class _BorrowQueueCard extends StatelessWidget {
   final List<_QueuedItemDraft> drafts;
   final String? selectedLine;
   final List<AllowedLocation> lines;
+  final DateTime? expectedReturnAt;
   final ValueChanged<String> onLineSelected;
+  final ValueChanged<DateTime?> onDueDateSelected;
   final VoidCallback onDescriptionChanged;
   final Future<void> Function(_QueuedItemDraft draft) onRemove;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFECEFF6)),
+        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,6 +219,46 @@ class _BorrowQueueCard extends StatelessWidget {
             decoration: const InputDecoration(
               labelText: 'Destination line',
             ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: InputDecorator(
+                  decoration: const InputDecoration(labelText: 'Expected return'),
+                  child: Text(
+                    expectedReturnAt == null
+                        ? 'No due date'
+                        : '${expectedReturnAt!.day.toString().padLeft(2, '0')}/${expectedReturnAt!.month.toString().padLeft(2, '0')}/${expectedReturnAt!.year}',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final selected = await showDatePicker(
+                    context: context,
+                    initialDate: expectedReturnAt ?? DateTime.now().add(const Duration(days: 1)),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (selected != null) {
+                    onDueDateSelected(selected);
+                  }
+                },
+                icon: const Icon(Icons.event_rounded),
+                label: const Text('Set due date'),
+              ),
+              if (expectedReturnAt != null) ...<Widget>[
+                const SizedBox(width: 10),
+                IconButton(
+                  onPressed: () => onDueDateSelected(null),
+                  icon: const Icon(Icons.close_rounded),
+                  tooltip: 'Clear due date',
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: 16),
           if (drafts.isEmpty)
@@ -246,15 +297,16 @@ class _ReturnQueueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: <Widget>[
         if (drafts.isEmpty)
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: const Color(0xFFECEFF6)),
+              border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
             ),
             child: const _EmptyQueue(
               text: 'No items in the return queue yet. Scan from the phone or from this PC.',
@@ -266,9 +318,9 @@ class _ReturnQueueCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFFECEFF6)),
+                border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,9 +341,9 @@ class _ReturnQueueCard extends StatelessWidget {
                         label: Text(rack.code),
                         selected: selected,
                         onSelected: (_) => onLocationSelected(draft, rack.code),
-                        selectedColor: const Color(0xFF5B39EA),
+                        selectedColor: colorScheme.primary,
                         labelStyle: TextStyle(
-                          color: selected ? Colors.white : const Color(0xFF183A37),
+                          color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
                           fontWeight: FontWeight.w700,
                         ),
                       );
@@ -329,13 +381,14 @@ class _QueuedItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFBFBFE),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFECEFF6)),
+        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.45)),
       ),
       child: Column(
         children: <Widget>[
@@ -370,6 +423,7 @@ class _QueuedItemHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAvailable = draft.item.status == ItemStatus.available;
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -379,10 +433,10 @@ class _QueuedItemHeader extends StatelessWidget {
             children: <Widget>[
               Text(
                 draft.item.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
-                  color: Color(0xFF183A37),
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 4),
@@ -420,11 +474,12 @@ class _EmptyQueue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         height: 1.5,
-        color: Color(0xFF6A738A),
+        color: colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -440,16 +495,17 @@ class _CountPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0ECFF),
+        color: colorScheme.primary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: Color(0xFF5B39EA),
+        style: TextStyle(
+          color: colorScheme.primary,
           fontWeight: FontWeight.w700,
         ),
       ),

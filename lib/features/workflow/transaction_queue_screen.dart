@@ -38,6 +38,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
   bool _isRefreshingPair = false;
   bool _isSubmitting = false;
   String? _borrowDestinationLine;
+  DateTime? _borrowExpectedReturnAt;
 
   bool get _isBorrow => widget.mode == WorkflowMode.borrow;
   String get _screenTitle => _isBorrow ? 'Borrow items' : 'Return items';
@@ -169,6 +170,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
   }
 
   Future<void> _removeDraft(_QueuedItemDraft draft) async {
+    final index = _drafts.indexOf(draft);
     if (draft.fromPairing && _livePairingSession != null) {
       await widget.repository.consumePairingScan(
         sessionCode: _livePairingSession!.code,
@@ -180,8 +182,29 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     if (!mounted) return;
     setState(() {
       _drafts.remove(draft);
-      draft.dispose();
     });
+
+    var restored = false;
+    await ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${draft.item.name} removed from the queue.'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            if (!mounted) return;
+            restored = true;
+            final safeIndex = index < 0 ? _drafts.length : index.clamp(0, _drafts.length).toInt();
+            setState(() {
+              _drafts.insert(safeIndex, draft);
+            });
+          },
+        ),
+      ),
+    ).closed;
+
+    if (!restored) {
+      draft.dispose();
+    }
   }
 
   bool get _canSubmitBorrow {
@@ -213,6 +236,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
             borrowerName: draft.actorName,
             destinationLine: _borrowDestinationLine!,
             description: description.isEmpty ? null : description,
+            expectedReturnAt: _borrowExpectedReturnAt,
           );
         } else {
           await widget.repository.returnItem(
@@ -240,6 +264,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
       setState(() {
         _drafts.clear();
         _borrowDestinationLine = null;
+        _borrowExpectedReturnAt = null;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -252,6 +277,13 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Transaction could not be saved. Check the connection and try again. $error'),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -291,9 +323,15 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
                   drafts: _drafts,
                   selectedLine: _borrowDestinationLine,
                   lines: locations,
+                  expectedReturnAt: _borrowExpectedReturnAt,
                   onLineSelected: (line) {
                     setState(() {
                       _borrowDestinationLine = line;
+                    });
+                  },
+                  onDueDateSelected: (date) {
+                    setState(() {
+                      _borrowExpectedReturnAt = date;
                     });
                   },
                   onDescriptionChanged: () => setState(() {}),

@@ -42,6 +42,7 @@ abstract class InventoryRepository {
     required String borrowerName,
     required String destinationLine,
     String? description,
+    DateTime? expectedReturnAt,
   });
 
   Future<void> returnItem({
