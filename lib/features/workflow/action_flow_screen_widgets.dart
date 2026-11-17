@@ -35,8 +35,8 @@ class _FlowBanner extends StatelessWidget {
           Expanded(
             child: Text(
               isBorrow
-                  ? 'Borrowing starts with a scan, then one tap for the correct line.'
-                  : 'Returning starts with a scan, then one tap for the correct rack.',
+                  ? 'Peminjaman dimulai dengan pindai, lalu satu ketukan untuk line yang tepat.'
+                  : 'Pengembalian dimulai dengan pindai, lalu satu ketukan untuk rak yang tepat.',
               style: const TextStyle(
                 color: Color(0xFF183A37),
                 fontWeight: FontWeight.w700,
@@ -67,12 +67,12 @@ class _ReadinessNotice extends StatelessWidget {
     String message;
     if (canProceed) {
       message = isBorrow
-          ? 'This item is available and can be borrowed now.'
-          : 'This item is currently out, so it can be returned to a rack.';
+          ? 'Barang ini tersedia dan dapat dipinjam sekarang.'
+          : 'Barang ini sedang dipinjam, sehingga dapat dikembalikan ke rak.';
     } else {
       message = isBorrow
-          ? 'This item is already borrowed. Ask the operator to return it before borrowing again.'
-          : 'This item is already marked as available in the equipment room.';
+          ? 'Barang ini sedang dipinjam. Minta operator mengembalikannya sebelum dipinjam lagi.'
+          : 'Barang ini sudah tercatat tersedia di ruang peralatan.';
     }
 
     return Container(
@@ -145,11 +145,11 @@ class _SubmitPreview extends StatelessWidget {
           ),
           if (item != null || actorName != null || selectedLocation != null) ...<Widget>[
             const SizedBox(height: 14),
-            if (item != null) _SummaryRow(label: 'Item', value: item!.name),
-            if (actorName != null) _SummaryRow(label: isBorrow ? 'Borrower' : 'Returner', value: actorName!),
+            if (item != null) _SummaryRow(label: 'Barang', value: item!.name),
+            if (actorName != null) _SummaryRow(label: isBorrow ? 'Peminjam' : 'Pengembali', value: actorName!),
             if (selectedLocation != null)
               _SummaryRow(
-                label: isBorrow ? 'Destination line' : 'Rack location',
+                label: isBorrow ? 'Line tujuan' : 'Lokasi rak',
                 value: selectedLocation!,
               ),
           ],
@@ -214,13 +214,13 @@ class _PairingStatusCard extends StatelessWidget {
   String get _statusLabel {
     switch (session.status) {
       case PairingSessionStatus.waitingForPhone:
-        return 'Waiting for phone';
+        return 'Menunggu ponsel';
       case PairingSessionStatus.connected:
-        return 'Phone connected';
+        return 'Ponsel tersambung';
       case PairingSessionStatus.scanned:
-        return 'Scan received';
+        return 'Pindaian diterima';
       case PairingSessionStatus.idle:
-        return 'Idle';
+        return 'Siaga';
     }
   }
 
@@ -242,7 +242,7 @@ class _PairingStatusCard extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Phone pairing: ${session.code}',
+                  'Sambungan ponsel: ${session.code}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF183A37),
@@ -269,14 +269,14 @@ class _PairingStatusCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             session.connectedDeviceName == null
-                ? 'No phone connected yet.'
-                : 'Connected device: ${session.connectedDeviceName}',
+                ? 'Belum ada ponsel yang tersambung.'
+                : 'Perangkat tersambung: ${session.connectedDeviceName}',
           ),
           const SizedBox(height: 6),
           Text(
             session.lastScannedQr == null || session.lastScannedQr!.isEmpty
-                ? 'No incoming QR scan yet.'
-                : 'Latest incoming QR: ${session.lastScannedQr}',
+                ? 'Belum ada pindaian QR masuk.'
+                : 'QR masuk terakhir: ${session.lastScannedQr}',
             style: TextStyle(
               color: session.lastScannedQr == null || session.lastScannedQr!.isEmpty
                   ? const Color(0xFF5E6B82)
@@ -394,7 +394,7 @@ class _ScannedItemCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  available ? 'Available' : 'Borrowed',
+                  available ? 'Tersedia' : 'Dipinjam',
                   style: TextStyle(
                     color: available ? const Color(0xFF16C098) : const Color(0xFFEA5455),
                     fontWeight: FontWeight.w700,
@@ -410,13 +410,13 @@ class _ScannedItemCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Current location: ${item.currentLocation}',
+            'Lokasi saat ini: ${item.currentLocation}',
             style: const TextStyle(color: Color(0xFF5D7470)),
           ),
           if (item.lastBorrowerName != null && item.lastBorrowerName!.trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: 4),
             Text(
-              'Latest borrower: ${item.lastBorrowerName}',
+              'Peminjam terakhir: ${item.lastBorrowerName}',
               style: const TextStyle(color: Color(0xFF5D7470)),
             ),
           ],

@@ -35,7 +35,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
     final password = _passwordController.text;
     if (badge.isEmpty || password.isEmpty) {
       setState(() {
-        _error = 'Enter your badge ID and password first.';
+        _error = 'Masukkan ID badge dan kata sandi terlebih dahulu.';
       });
       return;
     }
@@ -58,7 +58,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
 
     if (user == null) {
       setState(() {
-        _error = 'Invalid badge ID or password.';
+        _error = 'ID badge atau kata sandi salah.';
       });
       return;
     }
@@ -96,7 +96,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                       ),
                       const SizedBox(height: 18),
                       const Text(
-                        'Mobile sign in',
+                        'Masuk seluler',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
@@ -104,21 +104,21 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'Sign in to monitor equipment and use your phone as a paired scanner for the equipment-room desktop.',
+                        'Masuk untuk memantau peralatan dan menggunakan ponsel Anda sebagai pemindai yang tersambung ke desktop ruang peralatan.',
                         style: TextStyle(height: 1.5),
                       ),
                       const SizedBox(height: 20),
                       TextField(
                         controller: _badgeController,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(labelText: 'Badge ID'),
+                        decoration: const InputDecoration(labelText: 'ID badge'),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
                         onSubmitted: (_) => _submit(),
-                        decoration: const InputDecoration(labelText: 'Password'),
+                        decoration: const InputDecoration(labelText: 'Kata sandi'),
                       ),
                       if (_error != null) ...<Widget>[
                         const SizedBox(height: 12),
@@ -141,7 +141,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                   height: 18,
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 )
-                              : const Text('Continue'),
+                              : const Text('Lanjutkan'),
                         ),
                       ),
                     ],

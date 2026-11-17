@@ -53,19 +53,19 @@ class _LocationEditorDialogState extends State<LocationEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.location == null ? 'Add location' : 'Edit location'),
+      title: Text(widget.location == null ? 'Tambah lokasi' : 'Ubah lokasi'),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _codeController, label: 'Location code'),
+            _DialogField(controller: _codeController, label: 'Kode lokasi'),
             const SizedBox(height: 10),
             DropdownButtonFormField<LocationType>(
               initialValue: _type,
               items: const <DropdownMenuItem<LocationType>>[
                 DropdownMenuItem(value: LocationType.line, child: Text('Line')),
-                DropdownMenuItem(value: LocationType.rack, child: Text('Rack')),
+                DropdownMenuItem(value: LocationType.rack, child: Text('Rak')),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -74,11 +74,11 @@ class _LocationEditorDialogState extends State<LocationEditorDialog> {
                   });
                 }
               },
-              decoration: const InputDecoration(labelText: 'Type'),
+              decoration: const InputDecoration(labelText: 'Tipe'),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Active'),
+              title: const Text('Aktif'),
               value: _isActive,
               onChanged: (value) {
                 setState(() {
@@ -90,8 +90,8 @@ class _LocationEditorDialogState extends State<LocationEditorDialog> {
         ),
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-        FilledButton(onPressed: _save, child: const Text('Save')),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Batal')),
+        FilledButton(onPressed: _save, child: const Text('Simpan')),
       ],
     );
   }

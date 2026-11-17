@@ -63,24 +63,24 @@ class _UserEditorDialogState extends State<UserEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.user == null ? 'Add user' : 'Edit user'),
+      title: Text(widget.user == null ? 'Tambah pengguna' : 'Ubah pengguna'),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _nameController, label: 'Full name'),
+            _DialogField(controller: _nameController, label: 'Nama lengkap'),
             const SizedBox(height: 10),
-            _DialogField(controller: _badgeController, label: 'Badge ID'),
+            _DialogField(controller: _badgeController, label: 'ID badge'),
             const SizedBox(height: 10),
-            _DialogField(controller: _passwordController, label: 'Password'),
+            _DialogField(controller: _passwordController, label: 'Kata sandi'),
             const SizedBox(height: 10),
             DropdownButtonFormField<UserRole>(
               initialValue: _role,
               items: const <DropdownMenuItem<UserRole>>[
                 DropdownMenuItem(value: UserRole.admin, child: Text('Admin')),
                 DropdownMenuItem(value: UserRole.operator, child: Text('Operator')),
-                DropdownMenuItem(value: UserRole.viewer, child: Text('Viewer')),
+                DropdownMenuItem(value: UserRole.viewer, child: Text('Peninjau')),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -89,11 +89,11 @@ class _UserEditorDialogState extends State<UserEditorDialog> {
                   });
                 }
               },
-              decoration: const InputDecoration(labelText: 'Role'),
+              decoration: const InputDecoration(labelText: 'Peran'),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Active'),
+              title: const Text('Aktif'),
               value: _isActive,
               onChanged: (value) {
                 setState(() {
@@ -105,8 +105,8 @@ class _UserEditorDialogState extends State<UserEditorDialog> {
         ),
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-        FilledButton(onPressed: _save, child: const Text('Save')),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Batal')),
+        FilledButton(onPressed: _save, child: const Text('Simpan')),
       ],
     );
   }

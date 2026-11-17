@@ -69,13 +69,13 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
         _isConnected = true;
         _session = session;
         _selectedMode = _mapFromSessionMode(session.activeMode);
-        _statusText = 'Connected to equipment-room PC session.';
+        _statusText = 'Tersambung ke sesi PC ruang peralatan.';
       });
       _startPolling();
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _statusText = 'Session code not found.';
+        _statusText = 'Kode sesi tidak ditemukan.';
       });
     }
   }
@@ -91,7 +91,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
     final code = _extractPairCode(rawValue);
     if (code == null) {
       setState(() {
-        _statusText = 'That QR is not a desktop pairing QR.';
+        _statusText = 'QR tersebut bukan QR sambungan desktop.';
       });
       return;
     }
@@ -152,16 +152,16 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
               setState(() {
                 _session = session;
                 _statusText = _selectedMode == _PairActionMode.returnItem
-                    ? 'Return item queued on desktop. Keep scanning or switch back to the desktop to complete the return.'
+                    ? 'Barang kembali masuk antrean di desktop. Lanjutkan memindai atau beralih ke desktop untuk menyelesaikan pengembalian.'
                     : _selectedMode == _PairActionMode.registerItem
-                        ? 'New item QR sent to desktop. Complete the item registration there.'
-                        : 'Borrow item queued on desktop. Keep scanning or switch back to the desktop to complete the borrow.';
+                        ? 'QR barang baru dikirim ke desktop. Selesaikan registrasi barang di sana.'
+                        : 'Barang pinjam masuk antrean di desktop. Lanjutkan memindai atau beralih ke desktop untuk menyelesaikan peminjaman.';
               });
               return true;
             } catch (_) {
               if (!mounted) return false;
               setState(() {
-                _statusText = 'Failed to send scan to the desktop session.';
+                _statusText = 'Gagal mengirim pindaian ke sesi desktop.';
               });
               return false;
             } finally {
@@ -204,15 +204,15 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
       setState(() {
         _session = updatedSession;
         _statusText = mode == _PairActionMode.returnItem
-            ? 'Return mode sent to desktop. The web view should open the return queue shortly.'
+            ? 'Mode kembali dikirim ke desktop. Antrean pengembalian akan segera terbuka di desktop.'
             : mode == _PairActionMode.registerItem
-                ? 'Register-item mode sent to desktop. The web view should open the new item form after the next scan.'
-                : 'Borrow mode sent to desktop. The web view should open the borrow queue shortly.';
+                ? 'Mode daftar barang dikirim ke desktop. Formulir barang baru akan terbuka di desktop setelah pindaian berikutnya.'
+                : 'Mode pinjam dikirim ke desktop. Antrean peminjaman akan segera terbuka di desktop.';
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _statusText = 'Failed to send the selected mode to the desktop session.';
+        _statusText = 'Gagal mengirim mode yang dipilih ke sesi desktop.';
       });
     } finally {
       if (mounted) {
@@ -236,13 +236,13 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
         _session = cleared;
         _isConnected = false;
         _selectedMode = null;
-        _statusText = 'Phone disconnected from the desktop session.';
+        _statusText = 'Ponsel terputus dari sesi desktop.';
       });
       _poller?.cancel();
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _statusText = 'Failed to disconnect from the desktop session.';
+        _statusText = 'Gagal memutuskan sambungan dari sesi desktop.';
       });
     }
   }
@@ -263,7 +263,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pair scanner')),
+      appBar: AppBar(title: const Text('Sambungkan pemindai')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: <Widget>[
@@ -281,12 +281,12 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const Text(
-                  'Use phone as a scanner',
+                  'Gunakan ponsel sebagai pemindai',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'The phone can scan, but it cannot borrow or return by itself. A PC session in the equipment room must approve the action.',
+                  'Ponsel dapat memindai, tetapi tidak dapat meminjam atau mengembalikan sendiri. Sesi PC di ruang peralatan harus menyetujui aksinya.',
                   style: TextStyle(height: 1.5, color: Color(0xFFF0ECFF)),
                 ),
                 const SizedBox(height: 16),
@@ -299,7 +299,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
                     border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
                   ),
                   child: Text(
-                    'Signed in as ${widget.currentUser.name}',
+                    'Masuk sebagai ${widget.currentUser.name}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
@@ -315,11 +315,11 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
                     minimumSize: const Size.fromHeight(52),
                   ),
                   icon: const Icon(Icons.qr_code_scanner_rounded),
-                  label: const Text('Scan desktop QR'),
+                  label: const Text('Pindai QR desktop'),
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Fallback: enter the desktop pair code manually if the camera cannot scan the QR.',
+                  'Alternatif: masukkan kode sambungan desktop secara manual jika kamera tidak dapat memindai QR.',
                   style: TextStyle(height: 1.5, color: Color(0xFFF0ECFF)),
                 ),
                 const SizedBox(height: 12),
@@ -327,7 +327,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
                   controller: _sessionController,
                   style: const TextStyle(color: Color(0xFF183A37), fontWeight: FontWeight.w700),
                   decoration: InputDecoration(
-                    hintText: 'Enter pairing code from PC',
+                    hintText: 'Masukkan kode sambungan dari PC',
                     hintStyle: const TextStyle(color: Color(0xFF6A738A)),
                     filled: true,
                     fillColor: Colors.white,
@@ -344,7 +344,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
                     backgroundColor: Colors.white,
                     foregroundColor: const Color(0xFF5B39EA),
                   ),
-                  child: const Text('Connect to PC session'),
+                  child: const Text('Sambungkan ke sesi PC'),
                 ),
                 if (_statusText != null) ...<Widget>[
                   const SizedBox(height: 12),
@@ -377,14 +377,14 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
             icon: const Icon(Icons.qr_code_scanner_rounded),
             label: Text(
               _isBusy
-                  ? 'Sending scan...'
+                  ? 'Mengirim pindaian...'
                   : _selectedMode == _PairActionMode.returnItem
-                      ? 'Scan item for return'
+                      ? 'Pindai barang untuk dikembalikan'
                   : _selectedMode == _PairActionMode.borrow
-                          ? 'Scan item for borrow'
+                          ? 'Pindai barang untuk dipinjam'
                           : _selectedMode == _PairActionMode.registerItem
-                              ? 'Scan QR for new item'
-                              : 'Choose borrow, return, or register first',
+                              ? 'Pindai QR untuk barang baru'
+                              : 'Pilih pinjam, kembali, atau daftar terlebih dahulu',
             ),
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(54),
@@ -396,14 +396,14 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
           OutlinedButton.icon(
             onPressed: _isConnected ? _refreshSession : null,
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Refresh pairing status'),
+            label: const Text('Perbarui status sambungan'),
           ),
           if (_isConnected) ...<Widget>[
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: _disconnect,
               icon: const Icon(Icons.link_off_rounded),
-              label: const Text('Disconnect phone'),
+              label: const Text('Putuskan ponsel'),
             ),
           ],
         ],
@@ -422,13 +422,13 @@ class _PhoneSessionCard extends StatelessWidget {
   String get _statusLabel {
     switch (session.status) {
       case PairingSessionStatus.waitingForPhone:
-        return 'Waiting for desktop approval';
+        return 'Menunggu persetujuan desktop';
       case PairingSessionStatus.connected:
-        return 'Ready to scan';
+        return 'Siap memindai';
       case PairingSessionStatus.scanned:
-        return 'Scan sent to desktop';
+        return 'Pindaian terkirim ke desktop';
       case PairingSessionStatus.idle:
-        return 'Idle';
+        return 'Siaga';
     }
   }
 
@@ -445,24 +445,24 @@ class _PhoneSessionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const Text(
-            'Current pairing',
+            'Sambungan saat ini',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
-          Text('Pair code: ${session.code}', style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text('Kode sambungan: ${session.code}', style: const TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           Text('Status: $_statusLabel'),
           const SizedBox(height: 8),
           Text(
             session.connectedDeviceName == null
-                ? 'Desktop has not reported a device yet.'
-                : 'Connected as: ${session.connectedDeviceName}',
+                ? 'Desktop belum melaporkan perangkat.'
+                : 'Tersambung sebagai: ${session.connectedDeviceName}',
           ),
           const SizedBox(height: 8),
           Text(
             session.lastScannedQr == null || session.lastScannedQr!.isEmpty
-                ? 'No QR has been sent from this phone yet.'
-                : 'Latest QR sent: ${session.lastScannedQr}',
+                ? 'Belum ada QR yang dikirim dari ponsel ini.'
+                : 'QR terakhir dikirim: ${session.lastScannedQr}',
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
         ],
@@ -495,12 +495,12 @@ class _ModePicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const Text(
-            'Choose action',
+            'Pilih aksi',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           const Text(
-            'Choose the action before scanning so the desktop can place the QR into the right borrow, return, or register flow.',
+            'Pilih aksi sebelum memindai agar desktop dapat menempatkan QR ke alur pinjam, kembali, atau daftar yang tepat.',
             style: TextStyle(height: 1.5),
           ),
           const SizedBox(height: 16),
@@ -508,7 +508,7 @@ class _ModePicker extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: ChoiceChip(
-                  label: const Text('Borrow'),
+                  label: const Text('Pinjam'),
                   selected: selectedMode == _PairActionMode.borrow,
                   onSelected: isUpdating ? null : (_) => onSelected(_PairActionMode.borrow),
                   selectedColor: const Color(0xFF5B39EA),
@@ -524,7 +524,7 @@ class _ModePicker extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: ChoiceChip(
-                  label: const Text('Return'),
+                  label: const Text('Kembali'),
                   selected: selectedMode == _PairActionMode.returnItem,
                   onSelected: isUpdating ? null : (_) => onSelected(_PairActionMode.returnItem),
                   selectedColor: const Color(0xFFE58F2A),
@@ -541,7 +541,7 @@ class _ModePicker extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: ChoiceChip(
-                  label: const Text('Register'),
+                  label: const Text('Daftar'),
                   selected: selectedMode == _PairActionMode.registerItem,
                   onSelected: isUpdating ? null : (_) => onSelected(_PairActionMode.registerItem),
                   selectedColor: const Color(0xFF16C098),

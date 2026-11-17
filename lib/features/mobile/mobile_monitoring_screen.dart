@@ -138,7 +138,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${widget.currentUser.badgeId} | ${widget.currentUser.role.name}',
+                      '${widget.currentUser.badgeId} | ${widget.currentUser.role.label}',
                       style: const TextStyle(color: Color(0xFFF0ECFF), fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -146,7 +146,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.dashboard_rounded),
-                title: const Text('Overview'),
+                title: const Text('Ringkasan'),
                 selected: _selectedIndex == 0,
                 onTap: () {
                   Navigator.of(context).pop();
@@ -157,7 +157,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.inventory_2_rounded),
-                title: const Text('Items'),
+                title: const Text('Barang'),
                 selected: _selectedIndex == 1,
                 onTap: () {
                   Navigator.of(context).pop();
@@ -168,7 +168,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.history_rounded),
-                title: const Text('Movement'),
+                title: const Text('Pergerakan'),
                 selected: _selectedIndex == 2,
                 onTap: () {
                   Navigator.of(context).pop();
@@ -180,7 +180,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.phonelink_setup_rounded),
-                title: const Text('Pair scanner'),
+                title: const Text('Sambungkan pemindai'),
                 onTap: () async {
                   Navigator.of(context).pop();
                   await _openPairing();
@@ -188,7 +188,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
               ),
               ListTile(
                 leading: Icon(widget.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
-                title: const Text('Toggle theme'),
+                title: const Text('Ganti tema'),
                 onTap: () {
                   Navigator.of(context).pop();
                   widget.onToggleTheme();
@@ -196,7 +196,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.refresh_rounded),
-                title: const Text('Refresh data'),
+                title: const Text('Muat ulang data'),
                 onTap: () async {
                   Navigator.of(context).pop();
                   await _refresh();
@@ -210,7 +210,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                   child: OutlinedButton.icon(
                     onPressed: widget.onLogout,
                     icon: const Icon(Icons.logout_rounded),
-                    label: const Text('Log out'),
+                    label: const Text('Keluar'),
                   ),
                 ),
               ),
@@ -266,15 +266,15 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                   ),
                   const SizedBox(height: 18),
                   const _MobileSectionTitle(
-                    title: 'Quick status',
-                    caption: 'A cleaner mobile desk for monitoring and pairing.',
+                    title: 'Status singkat',
+                    caption: 'Meja seluler yang lebih rapi untuk pemantauan dan sambungan.',
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: <Widget>[
                       Expanded(
                         child: _MobileSummaryCard(
-                          title: 'Ready',
+                          title: 'Tersedia',
                           value: '$readyCount',
                           icon: Icons.inventory_2_rounded,
                           accent: const Color(0xFF16C098),
@@ -283,7 +283,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _MobileSummaryCard(
-                          title: 'Borrowed',
+                          title: 'Dipinjam',
                           value: '$outCount',
                           icon: Icons.call_made_rounded,
                           accent: const Color(0xFFEA5455),
@@ -292,7 +292,7 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _MobileSummaryCard(
-                          title: 'Overdue',
+                          title: 'Terlambat',
                           value: '$overdueCount',
                           icon: Icons.warning_amber_rounded,
                           accent: const Color(0xFFF59E0B),
@@ -302,8 +302,8 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                   ),
                   const SizedBox(height: 18),
                   const _MobileSectionTitle(
-                    title: 'Recent movement',
-                    caption: 'Latest activity across the equipment flow.',
+                    title: 'Pergerakan terbaru',
+                    caption: 'Aktivitas terbaru di seluruh alur peralatan.',
                   ),
                   const SizedBox(height: 10),
                   ...data.movements.take(5).map(
@@ -317,8 +317,8 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.search_rounded),
                       hintText: _selectedIndex == 1
-                          ? 'Search item, QR, serial, brand, model, category, or location'
-                          : 'Search item, actor, QR code, location, or description',
+                          ? 'Cari barang, QR, nomor seri, merek, model, kategori, atau lokasi'
+                          : 'Cari barang, pelaku, kode QR, lokasi, atau keterangan',
                       suffixIcon: query.isEmpty
                           ? null
                           : IconButton(
@@ -334,26 +334,26 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
                 ],
                 if (_selectedIndex == 1) ...<Widget>[
                   _MobileSectionTitle(
-                    title: 'Items',
-                    caption: '${filteredItems.length} item${filteredItems.length == 1 ? '' : 's'} in view',
+                    title: 'Barang',
+                    caption: '${filteredItems.length} barang ditampilkan',
                   ),
                   const SizedBox(height: 10),
                   if (filteredItems.isEmpty)
                     const _MobileEmptyState(
-                      text: 'No items match that search yet. Try an item name, QR code, serial, brand, model, category, or location.',
+                      text: 'Belum ada barang yang cocok dengan pencarian. Coba nama barang, kode QR, nomor seri, merek, model, kategori, atau lokasi.',
                     )
                   else
                     ...filteredItems.map((item) => _MobileItemCard(item: item)),
                 ],
                 if (_selectedIndex == 2) ...<Widget>[
                   _MobileSectionTitle(
-                    title: 'Movement history',
-                    caption: '${filteredMovements.length} matching movement record${filteredMovements.length == 1 ? '' : 's'}',
+                    title: 'Riwayat pergerakan',
+                    caption: '${filteredMovements.length} catatan pergerakan yang cocok',
                   ),
                   const SizedBox(height: 10),
                   if (filteredMovements.isEmpty)
                     const _MobileEmptyState(
-                      text: 'No movement matches that search yet. Try an item name, QR code, actor, or location.',
+                      text: 'Belum ada pergerakan yang cocok dengan pencarian. Coba nama barang, kode QR, pelaku, atau lokasi.',
                     )
                   else
                     ...filteredMovements.map((record) => _MobileMovementCard(record: record)),
@@ -372,16 +372,16 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
           });
         },
         destinations: const <NavigationDestination>[
-          NavigationDestination(icon: Icon(Icons.dashboard_rounded), label: 'Overview'),
-          NavigationDestination(icon: Icon(Icons.inventory_2_rounded), label: 'Items'),
-          NavigationDestination(icon: Icon(Icons.history_rounded), label: 'Movement'),
+          NavigationDestination(icon: Icon(Icons.dashboard_rounded), label: 'Ringkasan'),
+          NavigationDestination(icon: Icon(Icons.inventory_2_rounded), label: 'Barang'),
+          NavigationDestination(icon: Icon(Icons.history_rounded), label: 'Pergerakan'),
         ],
       ),
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton.extended(
               onPressed: _openPairing,
               icon: const Icon(Icons.phonelink_setup_rounded),
-              label: const Text('Pair'),
+              label: const Text('Sambungkan'),
             )
           : null,
     );
@@ -390,13 +390,13 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
   String get _pageTitle {
     switch (_selectedIndex) {
       case 0:
-        return 'Overview';
+        return 'Ringkasan';
       case 1:
-        return 'Items';
+        return 'Barang';
       case 2:
-        return 'Movement';
+        return 'Pergerakan';
     }
-    return 'Overview';
+    return 'Ringkasan';
   }
 }
 
@@ -448,7 +448,7 @@ class _MobileHeroCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const Text(
-            'Mobile monitoring desk',
+            'Meja pemantauan seluler',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -457,7 +457,7 @@ class _MobileHeroCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Monitor item status, review movement, and pair this phone as a scanner when the desk needs remote scans.',
+            'Pantau status barang, tinjau pergerakan, dan sambungkan ponsel ini sebagai pemindai saat meja membutuhkan pemindaian jarak jauh.',
             style: TextStyle(
               color: Color(0xFFF0ECFF),
               height: 1.5,
@@ -466,11 +466,11 @@ class _MobileHeroCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: <Widget>[
-              Expanded(child: _MobileStatChip(label: 'Ready', value: '$readyCount')),
+              Expanded(child: _MobileStatChip(label: 'Tersedia', value: '$readyCount')),
               const SizedBox(width: 10),
-              Expanded(child: _MobileStatChip(label: 'Borrowed', value: '$outCount')),
+              Expanded(child: _MobileStatChip(label: 'Dipinjam', value: '$outCount')),
               const SizedBox(width: 10),
-              Expanded(child: _MobileStatChip(label: 'Overdue', value: '$overdueCount')),
+              Expanded(child: _MobileStatChip(label: 'Terlambat', value: '$overdueCount')),
             ],
           ),
           const SizedBox(height: 16),
@@ -483,7 +483,7 @@ class _MobileHeroCard extends StatelessWidget {
               border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
             ),
             child: Text(
-              'Signed in as ${currentUser.name} (${currentUser.badgeId})',
+              'Masuk sebagai ${currentUser.name} (${currentUser.badgeId})',
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -494,7 +494,7 @@ class _MobileHeroCard extends StatelessWidget {
           FilledButton.icon(
             onPressed: onPair,
             icon: const Icon(Icons.phonelink_setup_rounded),
-            label: const Text('Pair with equipment-room PC'),
+            label: const Text('Sambungkan ke PC ruang peralatan'),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: const Color(0xFF5B39EA),
@@ -607,12 +607,12 @@ class _MobileItemCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isReady = item.status == ItemStatus.available;
     final statusLabel = item.isOverdue
-        ? 'Overdue'
+        ? 'Terlambat'
         : item.isDueSoon
-            ? 'Due soon'
+            ? 'Segera jatuh tempo'
             : isReady
-                ? 'Ready'
-                : 'Borrowed';
+                ? 'Tersedia'
+                : 'Dipinjam';
     final statusAccent = item.isOverdue
         ? const Color(0xFFEA5455)
         : item.isDueSoon
@@ -651,7 +651,7 @@ class _MobileItemCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '${item.qrCode} | ${item.serialNumber ?? 'No serial'}',
+            '${item.qrCode} | ${item.serialNumber ?? 'Tanpa nomor seri'}',
             style: TextStyle(
               color: isDark ? const Color(0xFFCFD4E6) : const Color(0xFF4A546B),
               fontWeight: FontWeight.w700,
@@ -679,7 +679,7 @@ class _MobileItemCard extends StatelessWidget {
           if (item.expectedReturnAt != null) ...<Widget>[
             const SizedBox(height: 6),
             Text(
-              'Expected return: ${DateFormat('dd MMM yyyy').format(item.expectedReturnAt!)}',
+              'Batas pengembalian: ${DateFormat('dd MMM yyyy', 'id_ID').format(item.expectedReturnAt!)}',
               style: TextStyle(
                 color: item.isOverdue ? const Color(0xFFEA5455) : statusAccent,
                 fontWeight: FontWeight.w700,
@@ -727,7 +727,7 @@ class _MobileMovementCard extends StatelessWidget {
                 ),
               ),
               _MobileStatusPill(
-                label: record.action == MovementAction.borrow ? 'Borrow' : 'Return',
+                label: record.action == MovementAction.borrow ? 'Pinjam' : 'Kembali',
                 accent: accent,
               ),
             ],
@@ -742,7 +742,7 @@ class _MobileMovementCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'QR ${record.itemQrCode} | ${DateFormat('dd MMM yyyy, HH:mm').format(record.createdAt)}',
+            'QR ${record.itemQrCode} | ${DateFormat('dd MMM yyyy, HH:mm', 'id_ID').format(record.createdAt)}',
             style: TextStyle(
               color: isDark ? const Color(0xFF9FA8BF) : const Color(0xFF6A738A),
             ),

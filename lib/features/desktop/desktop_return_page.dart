@@ -18,17 +18,17 @@ class DesktopReturnPage extends StatelessWidget {
       children: <Widget>[
         _DesktopTransactionHero(
           accentColors: const <Color>[Color(0xFF14B8A6), Color(0xFF0F9A8A)],
-          badge: 'Return workspace',
-          title: 'Return items through a more deliberate and modern desk flow.',
+          badge: 'Ruang kerja pengembalian',
+          title: 'Kembalikan barang melalui alur meja yang lebih teliti dan modern.',
           description:
-              'Collect every return into one queue, keep the mobile and desktop scanner paths consistent, and assign each item back to the correct rack with less visual clutter.',
-          primaryLabel: 'Open return queue',
+              'Kumpulkan setiap pengembalian dalam satu antrean, jaga alur pemindai ponsel dan desktop tetap konsisten, dan tempatkan setiap barang kembali ke rak yang benar dengan tampilan yang lebih rapi.',
+          primaryLabel: 'Buka antrean kembali',
           primaryIcon: Icons.assignment_return_rounded,
           primaryAction: onReturn,
-          secondaryLabel: pairingSession == null ? 'Pair a phone on dashboard' : 'Phone is paired and ready',
+          secondaryLabel: pairingSession == null ? 'Sambungkan ponsel di dasbor' : 'Ponsel tersambung dan siap',
           secondaryIcon: Icons.phonelink_ring_rounded,
-          statusTitle: 'Return station',
-          statusValue: pairingSession == null ? 'Desk scanner only' : 'Phone-assisted',
+          statusTitle: 'Stasiun pengembalian',
+          statusValue: pairingSession == null ? 'Hanya pemindai meja' : 'Dibantu ponsel',
         ),
         const SizedBox(height: 18),
         Row(
@@ -41,18 +41,18 @@ class DesktopReturnPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     const _DesktopTransactionPanelHeader(
-                      title: 'Choose how items come back into the queue',
-                      caption: 'Return scans can happen at the desk or out in the room, but they still arrive in one controlled queue for final rack assignment.',
+                      title: 'Pilih cara barang kembali masuk ke antrean',
+                      caption: 'Pemindaian pengembalian dapat dilakukan di meja atau di dalam ruangan, tetapi tetap masuk ke satu antrean terkontrol untuk penentuan rak akhir.',
                     ),
                     const SizedBox(height: 20),
                     Row(
                       children: <Widget>[
                         Expanded(
                           child: _DesktopActionCard(
-                            title: 'Desk scanner',
-                            description: 'Best for returns handed straight back to the equipment room. The fastest path when the operator is already at the desk.',
+                            title: 'Pemindai meja',
+                            description: 'Paling cocok untuk barang yang dikembalikan langsung ke ruang peralatan. Cara tercepat saat operator sudah berada di meja.',
                             icon: Icons.qr_code_scanner_rounded,
-                            buttonLabel: 'Scan on this PC',
+                            buttonLabel: 'Pindai di PC ini',
                             onTap: onReturn,
                             primary: true,
                           ),
@@ -60,12 +60,12 @@ class DesktopReturnPage extends StatelessWidget {
                         const SizedBox(width: 16),
                         Expanded(
                           child: _DesktopActionCard(
-                            title: 'Paired phone scanner',
+                            title: 'Pemindai ponsel tersambung',
                             description: pairingSession == null
-                                ? 'Pair a phone first if you want returns scanned away from the desk and sent back here.'
-                                : 'Phone ${pairingSession!.connectedDeviceName ?? 'scanner'} can roam and keep feeding return scans back to the desk queue.',
+                                ? 'Sambungkan ponsel terlebih dahulu jika ingin memindai pengembalian di luar meja lalu mengirimnya ke sini.'
+                                : 'Ponsel ${pairingSession!.connectedDeviceName ?? 'pemindai'} dapat berkeliling dan terus mengirim pindaian pengembalian ke antrean meja.',
                             icon: Icons.smartphone_rounded,
-                            buttonLabel: pairingSession == null ? 'Not paired yet' : 'Use paired phone',
+                            buttonLabel: pairingSession == null ? 'Belum tersambung' : 'Gunakan ponsel tersambung',
                             onTap: pairingSession == null ? null : onReturn,
                           ),
                         ),
@@ -74,10 +74,10 @@ class DesktopReturnPage extends StatelessWidget {
                     const SizedBox(height: 18),
                     const _DesktopProcessStrip(
                       steps: <String>[
-                        'Scan returned item QR',
-                        'Review each queued row',
-                        'Choose final rack location',
-                        'Confirm the return movement',
+                        'Pindai QR barang yang dikembalikan',
+                        'Tinjau setiap baris antrean',
+                        'Pilih lokasi rak akhir',
+                        'Konfirmasi pengembalian',
                       ],
                     ),
                   ],
@@ -92,13 +92,13 @@ class DesktopReturnPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     const _DesktopTransactionPanelHeader(
-                      title: 'Pairing snapshot',
-                      caption: 'A paired phone keeps returns flowing without forcing everything back to the desk first.',
+                      title: 'Ringkasan sambungan ponsel',
+                      caption: 'Ponsel yang tersambung menjaga pengembalian tetap berjalan tanpa harus membawa semuanya ke meja terlebih dahulu.',
                     ),
                     const SizedBox(height: 18),
                     _DesktopPairingSummary(
                       pairingSession: pairingSession,
-                      emptyMessage: 'No phone is paired right now. Start pairing from the dashboard to show the desktop QR and connect a roaming scanner.',
+                      emptyMessage: 'Belum ada ponsel yang tersambung. Mulai sambungan dari dasbor untuk menampilkan QR desktop dan menghubungkan pemindai ponsel.',
                     ),
                   ],
                 ),
@@ -110,7 +110,7 @@ class DesktopReturnPage extends StatelessWidget {
         if (role == UserRole.viewer)
           const DesktopPanel(
             child: Text(
-              'This account can monitor and review return activity, but cannot start a return queue. Use an operator or admin account for transactions.',
+              'Akun ini dapat memantau dan meninjau aktivitas pengembalian, tetapi tidak dapat memulai antrean kembali. Gunakan akun operator atau admin untuk transaksi.',
             ),
           ),
       ],
@@ -258,7 +258,7 @@ class _DesktopTransactionHero extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   const Text(
-                    'Current mode',
+                    'Mode saat ini',
                     style: TextStyle(
                       color: Color(0xFFF0ECFF),
                       fontWeight: FontWeight.w600,
@@ -283,13 +283,13 @@ class _DesktopTransactionHero extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   const _DesktopHeroMiniStat(
-                    label: 'Queue style',
-                    value: 'Structured rows',
+                    label: 'Gaya antrean',
+                    value: 'Baris terstruktur',
                   ),
                   const SizedBox(height: 10),
                   const _DesktopHeroMiniStat(
-                    label: 'Submission',
-                    value: 'One review step',
+                    label: 'Pengiriman',
+                    value: 'Satu langkah tinjau',
                   ),
                 ],
               ),
@@ -491,17 +491,17 @@ class _DesktopPairingSummary extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _DesktopPairingStat(label: 'Pair code', value: pairingSession!.code),
+                _DesktopPairingStat(label: 'Kode sambungan', value: pairingSession!.code),
                 const SizedBox(height: 12),
                 _DesktopPairingStat(
-                  label: 'Device',
+                  label: 'Perangkat',
                   value: (pairingSession!.connectedDeviceName ?? '').isEmpty
-                      ? 'Waiting for phone'
+                      ? 'Menunggu ponsel'
                       : pairingSession!.connectedDeviceName!,
                 ),
                 const SizedBox(height: 12),
                 _DesktopPairingStat(
-                  label: 'Last scan',
+                  label: 'Pindaian terakhir',
                   value: (pairingSession!.lastScannedQr ?? '').isEmpty ? '-' : pairingSession!.lastScannedQr!,
                 ),
               ],

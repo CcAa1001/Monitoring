@@ -10,15 +10,15 @@ class RoleEditorDialog extends StatefulWidget {
 class _RoleEditorDialogState extends State<RoleEditorDialog> {
   final TextEditingController _nameController = TextEditingController();
   final Map<String, bool> _permissions = <String, bool>{
-    'Dashboard': true,
-    'Borrow': false,
-    'Return': false,
-    'History': false,
-    'Items': false,
-    'Categories': false,
-    'Locations': false,
-    'Roles': false,
-    'Users': false,
+    'Dasbor': true,
+    'Peminjaman': false,
+    'Pengembalian': false,
+    'Riwayat': false,
+    'Barang': false,
+    'Kategori': false,
+    'Lokasi': false,
+    'Peran': false,
+    'Pengguna': false,
   };
 
   @override
@@ -42,13 +42,13 @@ class _RoleEditorDialogState extends State<RoleEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add role'),
+      title: const Text('Tambah peran'),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _nameController, label: 'Role name'),
+            _DialogField(controller: _nameController, label: 'Nama peran'),
             const SizedBox(height: 12),
             ..._permissions.keys.map(
               (permission) => CheckboxListTile(
@@ -68,11 +68,11 @@ class _RoleEditorDialogState extends State<RoleEditorDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const Text('Batal'),
         ),
         FilledButton(
           onPressed: _save,
-          child: const Text('Save'),
+          child: const Text('Simpan'),
         ),
       ],
     );

@@ -59,13 +59,13 @@ class DesktopDashboardOverviewPage extends StatelessWidget {
         const SizedBox(height: 18),
         Row(
           children: <Widget>[
-            Expanded(child: DesktopMetricCard(title: 'Items ready', value: '$ready', icon: Icons.inventory_2_rounded)),
+            Expanded(child: DesktopMetricCard(title: 'Barang tersedia', value: '$ready', icon: Icons.inventory_2_rounded)),
             const SizedBox(width: 12),
-            Expanded(child: DesktopMetricCard(title: 'Currently out', value: '$borrowed', icon: Icons.call_made_rounded)),
+            Expanded(child: DesktopMetricCard(title: 'Sedang dipinjam', value: '$borrowed', icon: Icons.call_made_rounded)),
             const SizedBox(width: 12),
-            Expanded(child: DesktopMetricCard(title: 'Users', value: '${users.length}', icon: Icons.people_alt_rounded)),
+            Expanded(child: DesktopMetricCard(title: 'Pengguna', value: '${users.length}', icon: Icons.people_alt_rounded)),
             const SizedBox(width: 12),
-            Expanded(child: DesktopMetricCard(title: 'Locations', value: '${locations.length}', icon: Icons.grid_view_rounded)),
+            Expanded(child: DesktopMetricCard(title: 'Lokasi', value: '${locations.length}', icon: Icons.grid_view_rounded)),
           ],
         ),
         const SizedBox(height: 18),
@@ -139,7 +139,7 @@ class _DashboardHeroPanel extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
-                    pairingSession == null ? 'Desk mode active' : 'Phone pairing active',
+                    pairingSession == null ? 'Mode meja aktif' : 'Ponsel tersambung',
                     style: TextStyle(
                       color: const Color(0xFF5B39EA),
                       fontWeight: FontWeight.w800,
@@ -148,7 +148,7 @@ class _DashboardHeroPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Run the equipment room from one calmer dashboard.',
+                  'Kelola ruang peralatan dari satu dasbor yang lebih tertata.',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w800,
@@ -159,8 +159,8 @@ class _DashboardHeroPanel extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   userRole == UserRole.viewer
-                      ? 'This account is in monitoring mode. You can review activity and pairing health, but borrow and return actions stay locked.'
-                      : 'Start a desk scan, hand scanning to a paired phone, or jump directly into borrow and return workflows without leaving the hub.',
+                      ? 'Akun ini dalam mode pemantauan. Anda dapat meninjau aktivitas dan status koneksi ponsel, tetapi aksi pinjam dan kembalikan tetap terkunci.'
+                      : 'Mulai pindai dari meja, serahkan pemindaian ke ponsel yang tersambung, atau langsung masuk ke alur pinjam dan kembalikan tanpa meninggalkan halaman ini.',
                   style: TextStyle(
                     height: 1.6,
                     color: isDark ? const Color(0xFFB4BDD4) : const Color(0xFF687189),
@@ -174,25 +174,25 @@ class _DashboardHeroPanel extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onStartPairing,
                       icon: const Icon(Icons.phonelink_setup_rounded),
-                      label: Text(pairingSession == null ? 'Pair a phone' : 'Open pair QR'),
+                      label: Text(pairingSession == null ? 'Sambungkan ponsel' : 'Buka QR sambungan'),
                     ),
                     if (pairingSession != null)
                       OutlinedButton.icon(
                         onPressed: () => onDisconnectPairing(),
                         icon: const Icon(Icons.link_off_rounded),
-                        label: const Text('Disconnect phone'),
+                        label: const Text('Putuskan ponsel'),
                       ),
                     if (userRole != UserRole.viewer)
                       OutlinedButton.icon(
                         onPressed: onBorrow,
                         icon: const Icon(Icons.call_made_rounded),
-                        label: const Text('Borrow flow'),
+                        label: const Text('Alur pinjam'),
                       ),
                     if (userRole != UserRole.viewer)
                       OutlinedButton.icon(
                         onPressed: onReturn,
                         icon: const Icon(Icons.assignment_return_rounded),
-                        label: const Text('Return flow'),
+                        label: const Text('Alur kembalikan'),
                       ),
                   ],
                 ),
@@ -215,7 +215,7 @@ class _DashboardHeroPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Live desk snapshot',
+                    'Ringkasan meja langsung',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -225,30 +225,30 @@ class _DashboardHeroPanel extends StatelessWidget {
                   const SizedBox(height: 14),
                   Row(
                     children: <Widget>[
-                      Expanded(child: _DashboardInfoStat(label: 'Ready', value: '$readyCount')),
+                      Expanded(child: _DashboardInfoStat(label: 'Tersedia', value: '$readyCount')),
                       const SizedBox(width: 10),
-                      Expanded(child: _DashboardInfoStat(label: 'Borrowed', value: '$borrowedCount')),
+                      Expanded(child: _DashboardInfoStat(label: 'Dipinjam', value: '$borrowedCount')),
                       const SizedBox(width: 10),
-                      Expanded(child: _DashboardInfoStat(label: 'Scans today', value: '$scansToday')),
+                      Expanded(child: _DashboardInfoStat(label: 'Pindaian hari ini', value: '$scansToday')),
                     ],
                   ),
                   const SizedBox(height: 14),
                   _DashboardInfoRow(
                     icon: Icons.qr_code_2_rounded,
-                    label: 'Pair code',
-                    value: pairingSession?.code ?? 'Not created yet',
+                    label: 'Kode sambungan',
+                    value: pairingSession?.code ?? 'Belum dibuat',
                   ),
                   const SizedBox(height: 12),
                   _DashboardInfoRow(
                     icon: Icons.smartphone_rounded,
-                    label: 'Connected device',
-                    value: pairingSession?.connectedDeviceName ?? 'No phone paired',
+                    label: 'Perangkat tersambung',
+                    value: pairingSession?.connectedDeviceName ?? 'Belum ada ponsel tersambung',
                   ),
                   const SizedBox(height: 12),
                   _DashboardInfoRow(
                     icon: Icons.flash_on_rounded,
-                    label: 'Last scan',
-                    value: pairingSession?.lastScannedQr ?? 'Waiting for scan',
+                    label: 'Pindaian terakhir',
+                    value: pairingSession?.lastScannedQr ?? 'Menunggu pindaian',
                   ),
                 ],
               ),
@@ -305,8 +305,8 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _DashboardPanelHeader(
-            title: 'Recent movements',
-            caption: 'Track the latest equipment movement with search and action filtering.',
+            title: 'Pergerakan terbaru',
+            caption: 'Pantau pergerakan peralatan terbaru dengan pencarian dan filter aksi.',
           ),
           const SizedBox(height: 18),
           Row(
@@ -317,7 +317,7 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
                   onChanged: (_) => setState(() {}),
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.search_rounded),
-                    hintText: 'Search item, QR, actor, location, or note',
+                    hintText: 'Cari barang, QR, pelaku, lokasi, atau catatan',
                   ),
                 ),
               ),
@@ -327,9 +327,9 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
                 child: DropdownButtonFormField<String>(
                   initialValue: _filter,
                   items: const <DropdownMenuItem<String>>[
-                    DropdownMenuItem(value: 'All', child: Text('All activity')),
-                    DropdownMenuItem(value: 'Borrow', child: Text('Borrow only')),
-                    DropdownMenuItem(value: 'Return', child: Text('Return only')),
+                    DropdownMenuItem(value: 'All', child: Text('Semua aktivitas')),
+                    DropdownMenuItem(value: 'Borrow', child: Text('Hanya pinjam')),
+                    DropdownMenuItem(value: 'Return', child: Text('Hanya kembalikan')),
                   ],
                   onChanged: (value) {
                     if (value == null) return;
@@ -344,7 +344,7 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
           ),
           const SizedBox(height: 18),
           if (_filteredMovements.isEmpty)
-            const Text('No movements match the current search and filter.')
+            const Text('Tidak ada pergerakan yang cocok dengan pencarian dan filter saat ini.')
           else
             LayoutBuilder(
               builder: (context, constraints) {
@@ -453,8 +453,8 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _DashboardPanelHeader(
-            title: 'Equipment snapshot',
-            caption: 'Review the current state of the room and jump straight into item actions.',
+            title: 'Ringkasan peralatan',
+            caption: 'Tinjau kondisi ruang saat ini dan langsung lakukan aksi pada barang.',
           ),
           const SizedBox(height: 18),
           Row(
@@ -465,7 +465,7 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
                   onChanged: (_) => setState(() {}),
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.search_rounded),
-                    hintText: 'Search item, QR, category, or location',
+                    hintText: 'Cari barang, QR, kategori, atau lokasi',
                   ),
                 ),
               ),
@@ -475,9 +475,9 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
                 child: DropdownButtonFormField<String>(
                   initialValue: _filter,
                   items: const <DropdownMenuItem<String>>[
-                    DropdownMenuItem(value: 'All', child: Text('All status')),
-                    DropdownMenuItem(value: 'Ready', child: Text('Ready')),
-                    DropdownMenuItem(value: 'Borrowed', child: Text('Borrowed')),
+                    DropdownMenuItem(value: 'All', child: Text('Semua status')),
+                    DropdownMenuItem(value: 'Ready', child: Text('Tersedia')),
+                    DropdownMenuItem(value: 'Borrowed', child: Text('Dipinjam')),
                   ],
                   onChanged: (value) {
                     if (value == null) return;
@@ -492,7 +492,7 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
           ),
           const SizedBox(height: 18),
           if (_filteredItems.isEmpty)
-            const Text('No equipment matches the current search and filter.')
+            const Text('Tidak ada peralatan yang cocok dengan pencarian dan filter saat ini.')
           else
             ..._filteredItems.map((item) {
               return Padding(
@@ -500,7 +500,7 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
                 child: DesktopSimpleTile(
                   title: item.name,
                   subtitle: '${item.qrCode} | ${item.category} | ${item.currentLocation}',
-                  status: item.status == ItemStatus.available ? 'Ready' : 'Borrowed',
+                  status: item.status == ItemStatus.available ? 'Tersedia' : 'Dipinjam',
                   onHistory: () => widget.onViewItemHistory(item),
                   onEdit: widget.canManage ? () => widget.onEditItem?.call(item: item) : null,
                   onDelete: widget.canManage ? () => widget.onDeleteItem?.call(item) : null,
@@ -655,7 +655,7 @@ class _DashboardMovementTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final formatter = DateFormat('dd MMM yyyy, HH:mm');
+    final formatter = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
     final accent = record.action == MovementAction.borrow ? const Color(0xFF5B39EA) : const Color(0xFF14B8A6);
     return Container(
       padding: const EdgeInsets.all(18),
@@ -688,7 +688,7 @@ class _DashboardMovementTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  record.action == MovementAction.borrow ? 'Borrow' : 'Return',
+                  record.action == MovementAction.borrow ? 'Pinjam' : 'Kembali',
                   style: TextStyle(
                     color: accent,
                     fontWeight: FontWeight.w800,
@@ -712,7 +712,7 @@ class _DashboardMovementTile extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: _DashboardLocationPill(
-                  label: 'From',
+                  label: 'Dari',
                   value: record.fromLocation,
                 ),
               ),
@@ -721,7 +721,7 @@ class _DashboardMovementTile extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _DashboardLocationPill(
-                  label: 'To',
+                  label: 'Ke',
                   value: record.toLocation,
                 ),
               ),

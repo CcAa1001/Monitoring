@@ -80,19 +80,19 @@ class DesktopSimpleTile extends StatelessWidget {
                   IconButton(
                     onPressed: onHistory,
                     icon: const Icon(Icons.history_rounded, size: 20),
-                    tooltip: 'History',
+                    tooltip: 'Riwayat',
                   ),
                 if (onEdit != null)
                   IconButton(
                     onPressed: onEdit,
                     icon: const Icon(Icons.edit_rounded, size: 20),
-                    tooltip: 'Edit',
+                    tooltip: 'Ubah',
                   ),
                 if (onDelete != null)
                   IconButton(
                     onPressed: onDelete,
                     icon: const Icon(Icons.delete_outline_rounded, size: 20),
-                    tooltip: 'Delete',
+                    tooltip: 'Hapus',
                   ),
               ],
             ),

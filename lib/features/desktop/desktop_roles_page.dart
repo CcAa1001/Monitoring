@@ -25,8 +25,8 @@ class _DesktopRolesPage extends StatelessWidget {
     return ListView(
       children: <Widget>[
         const DesktopSectionHeader(
-          title: 'Roles',
-          subtitle: 'Define which responsibilities belong to admins, operators, and read-only viewers.',
+          title: 'Peran',
+          subtitle: 'Tentukan tanggung jawab untuk admin, operator, dan peninjau (hanya baca).',
         ),
         const SizedBox(height: 18),
         DesktopPanel(
@@ -37,20 +37,20 @@ class _DesktopRolesPage extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      'Permission matrix',
+                      'Matriks izin',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     ),
                   ),
                   FilledButton.icon(
                     onPressed: () => onAddRole(),
                     icon: const Icon(Icons.add_rounded),
-                    label: const Text('Add role'),
+                    label: const Text('Tambah peran'),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
               Text(
-                'Each role below describes what the terminal can expose, edit, and submit while that user is signed in.',
+                'Setiap peran di bawah menjelaskan apa yang dapat ditampilkan, diubah, dan dikirim terminal selama pengguna tersebut masuk.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 18),
@@ -95,7 +95,7 @@ class _DesktopRolesPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '${role.permissions.length} menu permissions configured',
+                                  '${role.permissions.length} izin menu dikonfigurasi',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],

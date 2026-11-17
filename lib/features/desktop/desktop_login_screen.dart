@@ -41,7 +41,7 @@ class _DesktopLoginScreenState extends State<DesktopLoginScreen> {
 
     if (user == null) {
       setState(() {
-        _error = 'Invalid badge ID or password.';
+        _error = 'ID badge atau kata sandi salah.';
       });
       return;
     }
@@ -63,24 +63,24 @@ class _DesktopLoginScreenState extends State<DesktopLoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   const Text(
-                    'Equipment-room sign in',
+                    'Masuk ruang peralatan',
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Use your badge ID and password to access the official equipment-room terminal.',
+                    'Gunakan ID badge dan kata sandi Anda untuk mengakses terminal resmi ruang peralatan.',
                     style: TextStyle(height: 1.5),
                   ),
                   const SizedBox(height: 20),
                   TextField(
                     controller: _badgeController,
-                    decoration: const InputDecoration(labelText: 'Badge ID'),
+                    decoration: const InputDecoration(labelText: 'ID badge'),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(labelText: 'Kata sandi'),
                   ),
                   if (_error != null) ...<Widget>[
                     const SizedBox(height: 10),
@@ -97,7 +97,7 @@ class _DesktopLoginScreenState extends State<DesktopLoginScreen> {
                     width: double.infinity,
                     child: FilledButton(
                       onPressed: _submit,
-                      child: const Text('Enter equipment-room desk'),
+                      child: const Text('Masuk ke meja ruang peralatan'),
                     ),
                   ),
                 ],

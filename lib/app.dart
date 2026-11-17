@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'data/inventory_repository.dart';
@@ -200,8 +201,11 @@ class _MonitoringAppState extends State<MonitoringApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Factory Monitoring',
+      title: 'Monitoring Peralatan Pabrik',
       debugShowCheckedModeBanner: false,
+      locale: const Locale('id', 'ID'),
+      supportedLocales: const <Locale>[Locale('id', 'ID')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
       themeMode: _themeMode,

@@ -77,7 +77,7 @@ class _LoadErrorState extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const Text(
-                'Desktop data could not load',
+                'Data desktop gagal dimuat',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
@@ -85,7 +85,7 @@ class _LoadErrorState extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               const Text(
-                'The desktop screen is reachable, but one of the data sources failed. This often happens when a new Supabase table or column has not been created yet.',
+                'Layar desktop dapat diakses, tetapi salah satu sumber data gagal dimuat. Hal ini sering terjadi jika tabel atau kolom Supabase yang baru belum dibuat.',
                 style: TextStyle(height: 1.5),
               ),
               const SizedBox(height: 16),
@@ -100,7 +100,7 @@ class _LoadErrorState extends StatelessWidget {
               FilledButton.icon(
                 onPressed: () => onRetry(),
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry loading'),
+                label: const Text('Muat ulang'),
               ),
             ],
           ),
@@ -140,7 +140,7 @@ class _DesktopTopBar extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                DateFormat('EEEE, dd MMM yyyy').format(DateTime.now()),
+                DateFormat('EEEE, dd MMM yyyy', 'id_ID').format(DateTime.now()),
                 style: TextStyle(
                   color: isDark ? const Color(0xFF9FA8BF) : const Color(0xFF7E8698),
                   fontWeight: FontWeight.w600,
@@ -177,7 +177,7 @@ class _DesktopTopBar extends StatelessWidget {
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                     Text(
-                      '${user.badgeId} | ${user.role.name}',
+                      '${user.badgeId} | ${user.role.label}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF7E8698),

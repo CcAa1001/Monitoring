@@ -19,17 +19,17 @@ class DesktopUsersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DesktopSimpleListPage<AppUser>(
-      title: 'Users',
-      subtitle: 'Control who can operate the desk, what they can change, and which accounts remain active.',
-      actionLabel: 'Add user',
+      title: 'Pengguna',
+      subtitle: 'Atur siapa yang dapat mengoperasikan meja, apa yang dapat mereka ubah, dan akun mana yang tetap aktif.',
+      actionLabel: 'Tambah pengguna',
       onAction: canManage ? onAdd : null,
       items: users,
-      searchHint: 'Search name, badge ID, role, or status',
-      searchText: (user) => '${user.name} ${user.badgeId} ${user.role.name} ${user.isActive ? 'active' : 'inactive'}',
+      searchHint: 'Cari nama, ID badge, peran, atau status',
+      searchText: (user) => '${user.name} ${user.badgeId} ${user.role.label} ${user.isActive ? 'aktif' : 'nonaktif'}',
       itemBuilder: (user) => DesktopSimpleTile(
         title: user.name,
-        subtitle: '${user.badgeId} | ${user.role.name}',
-        status: user.isActive ? 'Active' : 'Inactive',
+        subtitle: '${user.badgeId} | ${user.role.label}',
+        status: user.isActive ? 'Aktif' : 'Nonaktif',
         onEdit: canManage ? () => onEdit(user: user) : null,
         onDelete: canManage ? () => onDelete(user) : null,
       ),

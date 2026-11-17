@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../data/inventory_repository.dart';
 import '../../models/allowed_location.dart';
@@ -41,7 +42,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
   DateTime? _borrowExpectedReturnAt;
 
   bool get _isBorrow => widget.mode == WorkflowMode.borrow;
-  String get _screenTitle => _isBorrow ? 'Borrow items' : 'Return items';
+  String get _screenTitle => _isBorrow ? 'Pinjam barang' : 'Kembalikan barang';
   PairActionMode get _pairMode => _isBorrow ? PairActionMode.borrow : PairActionMode.returnItem;
 
   @override
@@ -132,7 +133,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     final alreadyExists = _drafts.any((draft) => draft.item.qrCode.toUpperCase() == item.qrCode.toUpperCase());
     if (alreadyExists) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${item.qrCode} is already in this queue.')),
+        SnackBar(content: Text('${item.qrCode} sudah ada di antrean ini.')),
       );
       return;
     }
@@ -161,7 +162,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     if (!mounted) return;
     if (item == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('QR code not found in the system.')),
+        const SnackBar(content: Text('Kode QR tidak ditemukan di sistem.')),
       );
       return;
     }
@@ -187,9 +188,9 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     var restored = false;
     await ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${draft.item.name} removed from the queue.'),
+        content: Text('${draft.item.name} dihapus dari antrean.'),
         action: SnackBarAction(
-          label: 'Undo',
+          label: 'Urungkan',
           onPressed: () {
             if (!mounted) return;
             restored = true;
@@ -271,8 +272,8 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
         SnackBar(
           content: Text(
             _isBorrow
-                ? 'Borrow transaction saved for $processedCount item${processedCount == 1 ? '' : 's'}.'
-                : 'Return transaction saved for $processedCount item${processedCount == 1 ? '' : 's'}.',
+                ? 'Transaksi peminjaman disimpan untuk $processedCount barang.'
+                : 'Transaksi pengembalian disimpan untuk $processedCount barang.',
           ),
         ),
       );
@@ -281,7 +282,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Transaction could not be saved. Check the connection and try again. $error'),
+          content: Text('Transaksi gagal disimpan. Periksa koneksi lalu coba lagi. $error'),
         ),
       );
     } finally {
@@ -365,7 +366,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_isBorrow ? 'Confirm borrow' : 'Confirm return'),
+                    : Text(_isBorrow ? 'Konfirmasi pinjam' : 'Konfirmasi kembali'),
               ),
             ],
           );

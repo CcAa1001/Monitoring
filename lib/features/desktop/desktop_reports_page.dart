@@ -18,7 +18,7 @@ class DesktopReportsPage extends StatelessWidget {
     await Clipboard.setData(ClipboardData(text: csv));
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label copied as CSV.')),
+      SnackBar(content: Text('$label disalin sebagai CSV.')),
     );
   }
 
@@ -30,15 +30,15 @@ class DesktopReportsPage extends StatelessWidget {
     return ListView(
       children: <Widget>[
         const DesktopSectionHeader(
-          title: 'Reports',
-          subtitle: 'Export operational records and review the patterns behind daily equipment movement.',
+          title: 'Laporan',
+          subtitle: 'Ekspor catatan operasional dan tinjau pola pergerakan peralatan harian.',
         ),
         const SizedBox(height: 18),
         Row(
           children: <Widget>[
             Expanded(
               child: DesktopMetricCard(
-                title: 'Ready',
+                title: 'Tersedia',
                 value: '${_reports.readyCount(items)}',
                 icon: Icons.inventory_2_rounded,
               ),
@@ -46,7 +46,7 @@ class DesktopReportsPage extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: DesktopMetricCard(
-                title: 'Borrowed',
+                title: 'Dipinjam',
                 value: '${_reports.borrowedCount(items)}',
                 icon: Icons.call_made_rounded,
               ),
@@ -54,7 +54,7 @@ class DesktopReportsPage extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: DesktopMetricCard(
-                title: 'Due soon',
+                title: 'Segera jatuh tempo',
                 value: '${_reports.dueSoonCount(items)}',
                 icon: Icons.schedule_rounded,
               ),
@@ -62,7 +62,7 @@ class DesktopReportsPage extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: DesktopMetricCard(
-                title: 'Overdue',
+                title: 'Terlambat',
                 value: '${_reports.overdueCount(items)}',
                 icon: Icons.warning_amber_rounded,
               ),
@@ -75,25 +75,25 @@ class DesktopReportsPage extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: _ReportListPanel(
-                title: 'Most borrowed items',
+                title: 'Barang paling sering dipinjam',
                 rows: mostBorrowed,
-                emptyText: 'No borrow activity has been recorded yet.',
+                emptyText: 'Belum ada aktivitas peminjaman yang tercatat.',
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _ReportListPanel(
-                title: 'Most active users',
+                title: 'Pengguna paling aktif',
                 rows: activeUsers,
-                emptyText: 'No user activity has been recorded yet.',
+                emptyText: 'Belum ada aktivitas pengguna yang tercatat.',
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _ReportListPanel(
-                title: 'Location movement',
+                title: 'Pergerakan lokasi',
                 rows: activeLocations,
-                emptyText: 'No location movement has been recorded yet.',
+                emptyText: 'Belum ada pergerakan lokasi yang tercatat.',
               ),
             ),
           ],
@@ -104,12 +104,12 @@ class DesktopReportsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Exports',
+                'Ekspor',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 10),
               Text(
-                'Copy CSV data for spreadsheet reports, audits, and monthly summaries.',
+                'Salin data CSV untuk laporan spreadsheet, audit, dan ringkasan bulanan.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 18),
@@ -118,19 +118,19 @@ class DesktopReportsPage extends StatelessWidget {
                 runSpacing: 12,
                 children: <Widget>[
                   FilledButton.icon(
-                    onPressed: () => _copy(context, _reports.historyCsv(movements), 'Movement history'),
+                    onPressed: () => _copy(context, _reports.historyCsv(movements), 'Riwayat pergerakan'),
                     icon: const Icon(Icons.download_rounded),
-                    label: const Text('Export history'),
+                    label: const Text('Ekspor riwayat'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _copy(context, _reports.itemsCsv(items), 'Item catalog'),
+                    onPressed: () => _copy(context, _reports.itemsCsv(items), 'Katalog barang'),
                     icon: const Icon(Icons.inventory_2_rounded),
-                    label: const Text('Export items'),
+                    label: const Text('Ekspor barang'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _copy(context, _reports.usersCsv(users), 'User list'),
+                    onPressed: () => _copy(context, _reports.usersCsv(users), 'Daftar pengguna'),
                     icon: const Icon(Icons.people_alt_rounded),
-                    label: const Text('Export users'),
+                    label: const Text('Ekspor pengguna'),
                   ),
                 ],
               ),

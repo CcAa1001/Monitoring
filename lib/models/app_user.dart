@@ -4,6 +4,20 @@ enum UserRole {
   viewer,
 }
 
+extension UserRoleLabel on UserRole {
+  /// Indonesian display label. Use [name] for stored/compared values.
+  String get label {
+    switch (this) {
+      case UserRole.admin:
+        return 'Admin';
+      case UserRole.operator:
+        return 'Operator';
+      case UserRole.viewer:
+        return 'Peninjau';
+    }
+  }
+}
+
 class AppUser {
   const AppUser({
     required this.id,

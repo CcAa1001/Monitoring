@@ -19,21 +19,21 @@ class DesktopLocationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DesktopSimpleListPage<AllowedLocation>(
-      title: 'Locations',
-      subtitle: 'Define the shelves, racks, and line destinations that movements are allowed to use.',
-      actionLabel: 'Add location',
+      title: 'Lokasi',
+      subtitle: 'Tentukan rak dan line tujuan yang boleh dipakai untuk pergerakan barang.',
+      actionLabel: 'Tambah lokasi',
       onAction: canManage ? onAdd : null,
       items: locations,
-      searchHint: 'Search location code, type, or status',
+      searchHint: 'Cari kode lokasi, tipe, atau status',
       searchText: (location) => <String>[
         location.code,
-        location.type == LocationType.line ? 'line production destination' : 'rack storage destination',
-        location.isActive ? 'active' : 'inactive',
+        location.type == LocationType.line ? 'line tujuan produksi' : 'rak penyimpanan',
+        location.isActive ? 'aktif' : 'nonaktif',
       ].join(' '),
       itemBuilder: (location) => DesktopSimpleTile(
         title: location.code,
-        subtitle: location.type == LocationType.line ? 'Production line destination' : 'Rack storage destination',
-        status: location.isActive ? 'Active' : 'Inactive',
+        subtitle: location.type == LocationType.line ? 'Line tujuan produksi' : 'Rak penyimpanan',
+        status: location.isActive ? 'Aktif' : 'Nonaktif',
         onEdit: canManage ? () => onEdit(location: location) : null,
         onDelete: canManage ? () => onDelete(location) : null,
       ),

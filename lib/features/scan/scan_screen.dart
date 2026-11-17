@@ -36,7 +36,7 @@ class _ScanScreenState extends State<ScanScreen> {
         final success = await widget.onDetected!(rawValue);
         if (!mounted) return;
         setState(() {
-          _statusText = success ? 'Scan success' : 'Scan failed';
+          _statusText = success ? 'Pindai berhasil' : 'Pindai gagal';
         });
         await Future<void>.delayed(const Duration(milliseconds: 900));
       } finally {
@@ -59,7 +59,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Scan QR code'),
+        title: const Text('Pindai kode QR'),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),
@@ -89,7 +89,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 margin: const EdgeInsets.only(top: 24),
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 decoration: BoxDecoration(
-                  color: _statusText == 'Scan success' ? const Color(0xFF16C098) : const Color(0xFFEA5455),
+                  color: _statusText == 'Pindai berhasil' ? const Color(0xFF16C098) : const Color(0xFFEA5455),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
@@ -112,8 +112,8 @@ class _ScanScreenState extends State<ScanScreen> {
               ),
               child: Text(
                 widget.allowContinuous
-                    ? 'Point the camera at each QR code. The scanner will stay open after every successful scan.'
-                    : 'Point the camera at the QR code. The app will continue automatically after a successful scan.',
+                    ? 'Arahkan kamera ke setiap kode QR. Pemindai akan tetap terbuka setelah setiap pindaian berhasil.'
+                    : 'Arahkan kamera ke kode QR. Aplikasi akan lanjut otomatis setelah pindaian berhasil.',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,

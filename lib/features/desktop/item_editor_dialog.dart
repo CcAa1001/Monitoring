@@ -138,7 +138,7 @@ class _ItemEditorDialogState extends State<ItemEditorDialog> {
         .where((location) => location.isActive || location.code == _selectedLocation)
         .toList();
     return AlertDialog(
-      title: Text(widget.item == null ? 'Register item' : 'Edit item'),
+      title: Text(widget.item == null ? 'Daftarkan barang' : 'Ubah barang'),
       content: SizedBox(
         width: 720,
         child: SingleChildScrollView(
@@ -147,31 +147,31 @@ class _ItemEditorDialogState extends State<ItemEditorDialog> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Expanded(child: _DialogField(controller: _nameController, label: 'Item name')),
+                  Expanded(child: _DialogField(controller: _nameController, label: 'Nama barang')),
                   const SizedBox(width: 10),
-                  Expanded(child: _DialogField(controller: _serialController, label: 'Serial number')),
+                  Expanded(child: _DialogField(controller: _serialController, label: 'Nomor seri')),
                 ],
               ),
               const SizedBox(height: 10),
               Row(
                 children: <Widget>[
-                  Expanded(child: _DialogField(controller: _qrController, label: 'QR code')),
+                  Expanded(child: _DialogField(controller: _qrController, label: 'Kode QR')),
                   const SizedBox(width: 10),
                   FilledButton.icon(
                     onPressed: _scanQrCode,
                     icon: const Icon(Icons.qr_code_scanner_rounded),
-                    label: const Text('Scan'),
+                    label: const Text('Pindai'),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
               Row(
                 children: <Widget>[
-                  Expanded(child: _DialogField(controller: _brandController, label: 'Brand')),
+                  Expanded(child: _DialogField(controller: _brandController, label: 'Merek')),
                   const SizedBox(width: 10),
                   Expanded(child: _DialogField(controller: _modelController, label: 'Model')),
                   const SizedBox(width: 10),
-                  Expanded(child: _DialogField(controller: _conditionController, label: 'Condition')),
+                  Expanded(child: _DialogField(controller: _conditionController, label: 'Kondisi')),
                 ],
               ),
               const SizedBox(height: 10),
@@ -190,7 +190,7 @@ class _ItemEditorDialogState extends State<ItemEditorDialog> {
                     _selectedCategory = value;
                   });
                 },
-                decoration: const InputDecoration(labelText: 'Category'),
+                decoration: const InputDecoration(labelText: 'Kategori'),
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
@@ -209,7 +209,7 @@ class _ItemEditorDialogState extends State<ItemEditorDialog> {
                     _status = _deriveStatus(value);
                   });
                 },
-                decoration: const InputDecoration(labelText: 'Current location'),
+                decoration: const InputDecoration(labelText: 'Lokasi saat ini'),
               ),
               const SizedBox(height: 10),
               Row(
@@ -218,24 +218,24 @@ class _ItemEditorDialogState extends State<ItemEditorDialog> {
                     child: InputDecorator(
                       decoration: const InputDecoration(labelText: 'Status'),
                       child: Text(
-                        _status == ItemStatus.available ? 'Ready' : 'Borrowed',
+                        _status == ItemStatus.available ? 'Tersedia' : 'Dipinjam',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Expanded(child: _DialogField(controller: _imageUrlController, label: 'Photo URL')),
+                  Expanded(child: _DialogField(controller: _imageUrlController, label: 'URL foto')),
                 ],
               ),
               const SizedBox(height: 10),
-              _DialogField(controller: _manualUrlController, label: 'Manual or attachment URL'),
+              _DialogField(controller: _manualUrlController, label: 'URL manual atau lampiran'),
               const SizedBox(height: 10),
               TextField(
                 controller: _notesController,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'Maintenance notes',
-                  hintText: 'Calibration, condition, repair history, or handling notes',
+                  labelText: 'Catatan perawatan',
+                  hintText: 'Kalibrasi, kondisi, riwayat perbaikan, atau catatan penanganan',
                 ),
               ),
             ],
@@ -243,8 +243,8 @@ class _ItemEditorDialogState extends State<ItemEditorDialog> {
         ),
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-        FilledButton(onPressed: _save, child: const Text('Save')),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Batal')),
+        FilledButton(onPressed: _save, child: const Text('Simpan')),
       ],
     );
   }

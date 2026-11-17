@@ -19,17 +19,17 @@ class DesktopCategoriesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DesktopSimpleListPage<ItemCategory>(
-      title: 'Categories',
-      subtitle: 'Shape the naming system used when equipment is registered and maintained.',
-      actionLabel: 'Add category',
+      title: 'Kategori',
+      subtitle: 'Atur sistem penamaan yang dipakai saat peralatan didaftarkan dan dirawat.',
+      actionLabel: 'Tambah kategori',
       onAction: canManage ? onAdd : null,
       items: categories,
-      searchHint: 'Search category name or status',
-      searchText: (category) => '${category.name} ${category.isActive ? 'active' : 'inactive'}',
+      searchHint: 'Cari nama kategori atau status',
+      searchText: (category) => '${category.name} ${category.isActive ? 'aktif' : 'nonaktif'}',
       itemBuilder: (category) => DesktopSimpleTile(
         title: category.name,
-        subtitle: category.isActive ? 'Available for item registration' : 'Hidden from active registration flows',
-        status: category.isActive ? 'Active' : 'Inactive',
+        subtitle: category.isActive ? 'Tersedia untuk registrasi barang' : 'Disembunyikan dari alur registrasi',
+        status: category.isActive ? 'Aktif' : 'Nonaktif',
         onEdit: canManage ? () => onEdit(category: category) : null,
         onDelete: canManage ? () => onDelete(category) : null,
       ),

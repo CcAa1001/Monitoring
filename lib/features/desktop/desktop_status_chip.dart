@@ -13,13 +13,13 @@ class DesktopStatusChip extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     Color fg = const Color(0xFF5B39EA);
     Color bg = isDark ? const Color(0x334C35D8) : const Color(0x22B39DFF);
-    if (label == 'Ready' || label == 'Active') {
+    if (label == 'Tersedia' || label == 'Aktif') {
       fg = const Color(0xFF16C098);
       bg = isDark ? const Color(0x3320B78C) : const Color(0x2216C098);
-    } else if (label == 'Borrowed' || label == 'Inactive' || label == 'Overdue') {
+    } else if (label == 'Dipinjam' || label == 'Nonaktif' || label == 'Terlambat') {
       fg = const Color(0xFFEA5455);
       bg = isDark ? const Color(0x33C4494A) : const Color(0x22EA5455);
-    } else if (label == 'Due soon') {
+    } else if (label == 'Segera jatuh tempo') {
       fg = const Color(0xFFF59E0B);
       bg = isDark ? const Color(0x33B7791F) : const Color(0x22F59E0B);
     }

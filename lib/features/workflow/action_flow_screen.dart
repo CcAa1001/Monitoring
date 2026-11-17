@@ -49,11 +49,11 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
   Timer? _pairingPoller;
 
   bool get _isBorrow => widget.mode == WorkflowMode.borrow;
-  String get _screenTitle => _isBorrow ? 'Borrow item' : 'Return item';
-  String get _locationTitle => _isBorrow ? 'Choose destination line' : 'Choose rack location';
-  String get _actorLabel => _isBorrow ? 'Borrower name' : 'Returner name';
-  String get _submitLabel => _isBorrow ? 'Confirm borrow' : 'Confirm return';
-  String get _actionLabel => _isBorrow ? 'borrow' : 'return';
+  String get _screenTitle => _isBorrow ? 'Pinjam barang' : 'Kembalikan barang';
+  String get _locationTitle => _isBorrow ? 'Pilih line tujuan' : 'Pilih lokasi rak';
+  String get _actorLabel => _isBorrow ? 'Nama peminjam' : 'Nama pengembali';
+  String get _submitLabel => _isBorrow ? 'Konfirmasi pinjam' : 'Konfirmasi kembali';
+  String get _actionLabel => _isBorrow ? 'peminjaman' : 'pengembalian';
   String? get _actorName {
     final value = _actorController.text.trim();
     return value.isEmpty ? null : value;
@@ -78,20 +78,20 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
   String get _submitHelperText {
     if (_scannedItem == null) {
-      return 'Scan an item first.';
+      return 'Pindai barang terlebih dahulu.';
     }
     if (!_hasValidStateForAction) {
       return _isBorrow
-          ? 'This item is already borrowed, so it cannot be borrowed again.'
-          : 'This item is already in the equipment room.';
+          ? 'Barang ini sedang dipinjam, sehingga tidak dapat dipinjam lagi.'
+          : 'Barang ini sudah berada di ruang peralatan.';
     }
     if (_actorName == null) {
-      return 'Choose or type the ${_isBorrow ? 'borrower' : 'returner'} name.';
+      return 'Pilih atau ketik nama ${_isBorrow ? 'peminjam' : 'pengembali'}.';
     }
     if (_selectedLocation == null) {
-      return _isBorrow ? 'Choose the destination line.' : 'Choose the rack location.';
+      return _isBorrow ? 'Pilih line tujuan.' : 'Pilih lokasi rak.';
     }
-    return 'Ready to save this $_actionLabel record.';
+    return 'Siap menyimpan catatan $_actionLabel ini.';
   }
 
   @override
@@ -176,7 +176,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
     if (item == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Paired phone scan was not found in the system.')),
+        const SnackBar(content: Text('Pindaian dari ponsel tersambung tidak ditemukan di sistem.')),
       );
       return;
     }
@@ -224,7 +224,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
     if (item == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('QR code not found in the system.')),
+        const SnackBar(content: Text('Kode QR tidak ditemukan di sistem.')),
       );
       return;
     }
@@ -257,33 +257,33 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(_isBorrow ? 'Confirm borrow record' : 'Confirm return record'),
+        title: Text(_isBorrow ? 'Konfirmasi catatan peminjaman' : 'Konfirmasi catatan pengembalian'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              'Please review the transaction before saving it to the movement log.',
+              'Tinjau transaksi sebelum menyimpannya ke log pergerakan.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
-            _SummaryRow(label: 'Item', value: item.name),
+            _SummaryRow(label: 'Barang', value: item.name),
             _SummaryRow(label: 'QR', value: item.qrCode),
-            _SummaryRow(label: _isBorrow ? 'Borrower' : 'Returner', value: actor),
+            _SummaryRow(label: _isBorrow ? 'Peminjam' : 'Pengembali', value: actor),
             _SummaryRow(
-              label: _isBorrow ? 'Destination line' : 'Rack location',
+              label: _isBorrow ? 'Line tujuan' : 'Lokasi rak',
               value: location,
             ),
             _SummaryRow(
-              label: 'Current status',
-              value: item.status == ItemStatus.available ? 'Available' : 'Borrowed',
+              label: 'Status saat ini',
+              value: item.status == ItemStatus.available ? 'Tersedia' : 'Dipinjam',
             ),
           ],
         ),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Go back'),
+            child: const Text('Kembali'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -303,21 +303,21 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
     if (item == null || actor == null || location == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please complete scan, name, and location first.')),
+        const SnackBar(content: Text('Lengkapi pindaian, nama, dan lokasi terlebih dahulu.')),
       );
       return;
     }
 
     if (_isBorrow && item.status == ItemStatus.borrowed) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This item is already borrowed and cannot be borrowed again.')),
+        const SnackBar(content: Text('Barang ini sedang dipinjam dan tidak dapat dipinjam lagi.')),
       );
       return;
     }
 
     if (!_isBorrow && item.status == ItemStatus.available) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This item is already in the equipment room.')),
+        const SnackBar(content: Text('Barang ini sudah berada di ruang peralatan.')),
       );
       return;
     }
@@ -351,7 +351,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${item.name} ${_isBorrow ? 'borrowed' : 'returned'} successfully.'),
+          content: Text('${item.name} berhasil ${_isBorrow ? 'dipinjam' : 'dikembalikan'}.'),
         ),
       );
       Navigator.of(context).pop();
@@ -383,8 +383,8 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
                 ),
                 child: Text(
                   widget.pairingSession == null
-                      ? 'This transaction is confirmed on the equipment-room PC. You can scan directly on this computer, or create a phone pairing session from the dashboard.'
-                      : 'This transaction is still confirmed on the equipment-room PC. If the paired phone has already scanned a QR code, pressing scan will use that QR first.',
+                      ? 'Transaksi ini dikonfirmasi di PC ruang peralatan. Anda dapat memindai langsung di komputer ini, atau membuat sesi sambungan ponsel dari dasbor.'
+                      : 'Transaksi ini tetap dikonfirmasi di PC ruang peralatan. Jika ponsel tersambung sudah memindai kode QR, tombol pindai akan memakai QR tersebut terlebih dahulu.',
                   style: const TextStyle(
                     color: Color(0xFF183A37),
                     height: 1.5,
@@ -404,15 +404,15 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
             const SizedBox(height: 18),
             _StepCard(
               number: '1',
-              title: 'Scan item QR',
-              subtitle: 'Scanning comes first so the system always knows exactly which item is moving.',
+              title: 'Pindai QR barang',
+              subtitle: 'Pemindaian dilakukan pertama agar sistem selalu tahu barang mana yang berpindah.',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   FilledButton.icon(
                     onPressed: _scanItem,
                     icon: const Icon(Icons.qr_code_scanner_rounded),
-                    label: Text(_scannedItem == null ? 'Scan now' : 'Rescan item'),
+                    label: Text(_scannedItem == null ? 'Pindai sekarang' : 'Pindai ulang'),
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(54),
                       backgroundColor: const Color(0xFF5B39EA),
@@ -434,7 +434,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
             _StepCard(
               number: '2',
               title: _actorLabel,
-              subtitle: 'Use a suggested person when possible so the record stays fast and consistent.',
+              subtitle: 'Gunakan nama yang disarankan bila memungkinkan agar pencatatan tetap cepat dan konsisten.',
               child: FutureBuilder<List<AppUser>>(
                 future: _usersFuture,
                 builder: (context, snapshot) {
@@ -487,10 +487,10 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
                         textInputAction: TextInputAction.done,
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
-                          hintText: _isBorrow ? 'Example: Budi' : 'Example: Sinta',
+                          hintText: _isBorrow ? 'Contoh: Budi' : 'Contoh: Sinta',
                           helperText: widget.currentUser == null
-                              ? 'Manual entry is still allowed if the name is not listed.'
-                              : 'Signed in as ${widget.currentUser!.name}. You can keep that name or switch it.',
+                              ? 'Isian manual tetap diperbolehkan jika nama tidak ada di daftar.'
+                              : 'Masuk sebagai ${widget.currentUser!.name}. Anda dapat tetap memakai nama itu atau menggantinya.',
                           filled: true,
                           fillColor: const Color(0xFFF7F8F6),
                           border: OutlineInputBorder(
@@ -509,8 +509,8 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
               number: '3',
               title: _locationTitle,
               subtitle: _isBorrow
-                  ? 'Operators choose the real destination line from a fixed list, not by typing.'
-                  : 'Returning requires assigning the exact rack so the next person can find it fast.',
+                  ? 'Operator memilih line tujuan dari daftar tetap, bukan dengan mengetik.'
+                  : 'Pengembalian wajib menentukan rak yang tepat agar orang berikutnya dapat menemukannya dengan cepat.',
               child: FutureBuilder<List<AllowedLocation>>(
                 future: _locationsFuture,
                 builder: (context, snapshot) {
@@ -525,8 +525,8 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
                   if (locations.isEmpty) {
                     return Text(
                       _isBorrow
-                          ? 'No active line destinations are available yet.'
-                          : 'No active rack locations are available yet.',
+                          ? 'Belum ada line tujuan yang aktif.'
+                          : 'Belum ada lokasi rak yang aktif.',
                       style: const TextStyle(
                         color: Color(0xFF5D7470),
                         fontWeight: FontWeight.w600,
@@ -566,7 +566,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
             ),
             const SizedBox(height: 18),
             _SubmitPreview(
-              title: _isBorrow ? 'Before you confirm' : 'Ready to confirm return',
+              title: _isBorrow ? 'Sebelum konfirmasi' : 'Siap konfirmasi pengembalian',
               message: _submitHelperText,
               isReady: _canSubmit,
               item: _scannedItem,

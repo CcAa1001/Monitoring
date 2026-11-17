@@ -54,7 +54,7 @@ class _SessionBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            isBorrow ? 'Borrow queue' : 'Return queue',
+            isBorrow ? 'Antrean pinjam' : 'Antrean kembali',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -63,7 +63,7 @@ class _SessionBanner extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Desktop scans use ${currentUser.name}. Phone scans keep the paired mobile user name when they are submitted.',
+            'Pindaian desktop memakai nama ${currentUser.name}. Pindaian ponsel tetap memakai nama pengguna ponsel yang tersambung saat dikirim.',
             style: TextStyle(
               height: 1.5,
               color: colorScheme.onSurfaceVariant,
@@ -75,8 +75,8 @@ class _SessionBanner extends StatelessWidget {
               Expanded(
                 child: Text(
                   pairingSession == null
-                      ? 'No phone paired right now. You can still scan on this PC.'
-                      : 'Pair code ${pairingSession!.code} is connected to ${pairingSession!.connectedDeviceName ?? 'a phone'}.',
+                      ? 'Belum ada ponsel yang tersambung. Anda tetap dapat memindai di PC ini.'
+                      : 'Kode sambungan ${pairingSession!.code} tersambung ke ${pairingSession!.connectedDeviceName ?? 'sebuah ponsel'}.',
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -123,7 +123,7 @@ class _ScanControlCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            isBorrow ? 'Scan items to borrow' : 'Scan items to return',
+            isBorrow ? 'Pindai barang untuk dipinjam' : 'Pindai barang untuk dikembalikan',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -133,8 +133,8 @@ class _ScanControlCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             isBorrow
-                ? 'Phone scans and desktop scans will keep adding items into one borrow queue. Pick the line after all items are scanned.'
-                : 'Each scanned item creates its own return row. You can keep scanning even while another description field is active.',
+                ? 'Pindaian ponsel dan desktop akan terus menambah barang ke satu antrean pinjam. Pilih line setelah semua barang dipindai.'
+                : 'Setiap barang yang dipindai membuat baris pengembalian sendiri. Anda tetap dapat memindai meskipun kolom keterangan lain sedang aktif.',
             style: const TextStyle(height: 1.5),
           ),
           const SizedBox(height: 14),
@@ -144,11 +144,11 @@ class _ScanControlCard extends StatelessWidget {
                 child: FilledButton.icon(
                   onPressed: onScanDesktop,
                   icon: const Icon(Icons.qr_code_scanner_rounded),
-                  label: const Text('Scan on this PC'),
+                  label: const Text('Pindai di PC ini'),
                 ),
               ),
               const SizedBox(width: 12),
-              _CountPill(label: '$queueCount item${queueCount == 1 ? '' : 's'}'),
+              _CountPill(label: '$queueCount barang'),
             ],
           ),
         ],
@@ -192,12 +192,12 @@ class _BorrowQueueCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const Text(
-            'Borrow queue',
+            'Antrean pinjam',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           const Text(
-            'All scanned items below will be borrowed to the same line when you confirm.',
+            'Semua barang yang dipindai di bawah akan dipinjamkan ke line yang sama saat Anda konfirmasi.',
             style: TextStyle(height: 1.5),
           ),
           const SizedBox(height: 16),
@@ -217,7 +217,7 @@ class _BorrowQueueCard extends StatelessWidget {
               }
             },
             decoration: const InputDecoration(
-              labelText: 'Destination line',
+              labelText: 'Line tujuan',
             ),
           ),
           const SizedBox(height: 16),
@@ -225,11 +225,11 @@ class _BorrowQueueCard extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Expected return'),
+                  decoration: const InputDecoration(labelText: 'Batas pengembalian'),
                   child: Text(
                     expectedReturnAt == null
-                        ? 'No due date'
-                        : '${expectedReturnAt!.day.toString().padLeft(2, '0')}/${expectedReturnAt!.month.toString().padLeft(2, '0')}/${expectedReturnAt!.year}',
+                        ? 'Tanpa batas waktu'
+                        : DateFormat('dd MMM yyyy', 'id_ID').format(expectedReturnAt!),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -248,14 +248,14 @@ class _BorrowQueueCard extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.event_rounded),
-                label: const Text('Set due date'),
+                label: const Text('Atur batas waktu'),
               ),
               if (expectedReturnAt != null) ...<Widget>[
                 const SizedBox(width: 10),
                 IconButton(
                   onPressed: () => onDueDateSelected(null),
                   icon: const Icon(Icons.close_rounded),
-                  tooltip: 'Clear due date',
+                  tooltip: 'Hapus batas waktu',
                 ),
               ],
             ],
@@ -263,7 +263,7 @@ class _BorrowQueueCard extends StatelessWidget {
           const SizedBox(height: 16),
           if (drafts.isEmpty)
             const _EmptyQueue(
-              text: 'No items in the borrow queue yet. Scan from the phone or from this PC.',
+              text: 'Belum ada barang di antrean pinjam. Pindai dari ponsel atau dari PC ini.',
             ),
           ...drafts.map(
             (draft) => _QueuedItemTile(
@@ -309,7 +309,7 @@ class _ReturnQueueCard extends StatelessWidget {
               border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
             ),
             child: const _EmptyQueue(
-              text: 'No items in the return queue yet. Scan from the phone or from this PC.',
+              text: 'Belum ada barang di antrean kembali. Pindai dari ponsel atau dari PC ini.',
             ),
           ),
         ...drafts.map(
@@ -354,8 +354,8 @@ class _ReturnQueueCard extends StatelessWidget {
                     controller: draft.descriptionController,
                     onChanged: (_) => onDescriptionChanged(),
                     decoration: const InputDecoration(
-                      labelText: 'Description or note (optional)',
-                      hintText: 'Example: handle checked, returned after cleaning',
+                      labelText: 'Keterangan atau catatan (opsional)',
+                      hintText: 'Contoh: gagang sudah dicek, dikembalikan setelah dibersihkan',
                     ),
                   ),
                 ],
@@ -401,8 +401,8 @@ class _QueuedItemTile extends StatelessWidget {
             controller: draft.descriptionController,
             onChanged: (_) => onChanged(),
             decoration: const InputDecoration(
-              labelText: 'Description or note (optional)',
-              hintText: 'Example: needed for setup, checked before release',
+              labelText: 'Keterangan atau catatan (opsional)',
+              hintText: 'Contoh: untuk setup, dicek sebelum dikeluarkan',
             ),
           ),
         ],
@@ -442,17 +442,17 @@ class _QueuedItemHeader extends StatelessWidget {
               const SizedBox(height: 4),
               Text('QR: ${draft.item.qrCode}'),
               const SizedBox(height: 2),
-              Text('Current location: ${draft.item.currentLocation}'),
+              Text('Lokasi saat ini: ${draft.item.currentLocation}'),
               const SizedBox(height: 2),
-              Text('Recorded as: ${draft.actorName}'),
+              Text('Dicatat sebagai: ${draft.actorName}'),
               const SizedBox(height: 6),
-              _CountPill(label: isAvailable ? 'Available' : 'Borrowed'),
+              _CountPill(label: isAvailable ? 'Tersedia' : 'Dipinjam'),
             ],
           ),
         ),
         Column(
           children: <Widget>[
-            _CountPill(label: draft.fromPairing ? 'Phone scan' : 'PC scan'),
+            _CountPill(label: draft.fromPairing ? 'Pindai ponsel' : 'Pindai PC'),
             const SizedBox(height: 8),
             IconButton(
               onPressed: onRemove,

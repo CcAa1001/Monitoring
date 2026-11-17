@@ -56,7 +56,7 @@ class Item {
 
   String get conditionLabel {
     final value = condition?.trim();
-    return value == null || value.isEmpty ? 'Unspecified' : value;
+    return value == null || value.isEmpty ? 'Tidak ditentukan' : value;
   }
 
   Item copyWith({

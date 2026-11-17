@@ -42,13 +42,13 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
   String get _statusLabel {
     switch (_session.status) {
       case PairingSessionStatus.waitingForPhone:
-        return 'Waiting for phone scan';
+        return 'Menunggu pindaian ponsel';
       case PairingSessionStatus.connected:
-        return 'Phone connected';
+        return 'Ponsel tersambung';
       case PairingSessionStatus.scanned:
-        return 'Item scan received';
+        return 'Pindaian barang diterima';
       case PairingSessionStatus.idle:
-        return 'Idle';
+        return 'Siaga';
     }
   }
 
@@ -99,12 +99,12 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'Pair Phone Scanner',
+                          'Sambungkan Pemindai Ponsel',
                           style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'Scan this QR in the mobile app. After that, the phone can keep sending item scans to this desktop session.',
+                          'Pindai QR ini di aplikasi ponsel. Setelah itu, ponsel dapat terus mengirim pindaian barang ke sesi desktop ini.',
                           style: TextStyle(height: 1.5),
                         ),
                       ],
@@ -153,7 +153,7 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Fallback: if the phone camera cannot scan the desktop QR, the operator can still type this code manually.',
+                            'Alternatif: jika kamera ponsel tidak dapat memindai QR desktop, operator tetap dapat mengetik kode ini secara manual.',
                             textAlign: TextAlign.center,
                             style: TextStyle(height: 1.5),
                           ),
@@ -166,11 +166,11 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const _DesktopPairStep(number: '1', text: 'Open the mobile app and tap Scan desktop QR.'),
+                        const _DesktopPairStep(number: '1', text: 'Buka aplikasi ponsel dan ketuk Pindai QR desktop.'),
                         const SizedBox(height: 12),
-                        const _DesktopPairStep(number: '2', text: 'Point the phone camera at this QR code.'),
+                        const _DesktopPairStep(number: '2', text: 'Arahkan kamera ponsel ke kode QR ini.'),
                         const SizedBox(height: 12),
-                        const _DesktopPairStep(number: '3', text: 'Once connected, keep the phone on the scanner screen and scan item QR codes.'),
+                        const _DesktopPairStep(number: '3', text: 'Setelah tersambung, biarkan ponsel di layar pemindai dan pindai kode QR barang.'),
                         const SizedBox(height: 20),
                         Container(
                           width: double.infinity,
@@ -190,9 +190,9 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                               ),
                               const SizedBox(height: 10),
-                              Text('Connected phone: ${_session.connectedDeviceName ?? 'Not connected yet'}'),
+                              Text('Ponsel tersambung: ${_session.connectedDeviceName ?? 'Belum tersambung'}'),
                               const SizedBox(height: 8),
-                              Text('Last scan received: ${_session.lastScannedQr ?? '-'}'),
+                              Text('Pindaian terakhir diterima: ${_session.lastScannedQr ?? '-'}'),
                             ],
                           ),
                         ),
@@ -200,13 +200,13 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                         OutlinedButton.icon(
                           onPressed: _refresh,
                           icon: const Icon(Icons.refresh_rounded),
-                          label: const Text('Refresh status'),
+                          label: const Text('Perbarui status'),
                         ),
                         const SizedBox(height: 12),
                         FilledButton.icon(
                           onPressed: (_session.connectedDeviceName ?? '').isEmpty ? null : _disconnect,
                           icon: const Icon(Icons.link_off_rounded),
-                          label: const Text('Unpair phone'),
+                          label: const Text('Putuskan ponsel'),
                         ),
                       ],
                     ),

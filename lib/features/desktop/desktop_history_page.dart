@@ -52,19 +52,19 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
     await Clipboard.setData(ClipboardData(text: rows.join('\n')));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('History CSV copied to clipboard.')),
+      const SnackBar(content: Text('CSV riwayat disalin ke clipboard.')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final formatter = DateFormat('dd MMM yyyy, HH:mm');
+    final formatter = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
     final rows = _filteredMovements;
     return ListView(
       children: <Widget>[
         const DesktopSectionHeader(
-          title: 'History',
-          subtitle: 'Detailed movement records.',
+          title: 'Riwayat',
+          subtitle: 'Catatan pergerakan secara rinci.',
         ),
         const SizedBox(height: 18),
         DesktopPanel(
@@ -79,7 +79,7 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
                       onChanged: (_) => setState(() {}),
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.search_rounded),
-                        hintText: 'Search item, QR, borrower, location, or description',
+                        hintText: 'Cari barang, QR, peminjam, lokasi, atau keterangan',
                       ),
                     ),
                   ),
@@ -89,9 +89,9 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
                     child: DropdownButtonFormField<String>(
                       initialValue: _filter,
                       items: const <DropdownMenuItem<String>>[
-                        DropdownMenuItem(value: 'All', child: Text('All')),
-                        DropdownMenuItem(value: 'Borrow', child: Text('Borrow')),
-                        DropdownMenuItem(value: 'Return', child: Text('Return')),
+                        DropdownMenuItem(value: 'All', child: Text('Semua')),
+                        DropdownMenuItem(value: 'Borrow', child: Text('Pinjam')),
+                        DropdownMenuItem(value: 'Return', child: Text('Kembali')),
                       ],
                       onChanged: (value) {
                         if (value != null) {
@@ -127,14 +127,14 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
                       child: DataTable(
                         columnSpacing: 24,
                         columns: const <DataColumn>[
-                          DataColumn(label: Text('Item name')),
+                          DataColumn(label: Text('Nama barang')),
                           DataColumn(label: Text('QR')),
-                          DataColumn(label: Text('Initial location')),
-                          DataColumn(label: Text('Borrower')),
-                          DataColumn(label: Text('From')),
-                          DataColumn(label: Text('To')),
-                          DataColumn(label: Text('Time')),
-                          DataColumn(label: Text('Description')),
+                          DataColumn(label: Text('Lokasi awal')),
+                          DataColumn(label: Text('Peminjam')),
+                          DataColumn(label: Text('Dari')),
+                          DataColumn(label: Text('Ke')),
+                          DataColumn(label: Text('Waktu')),
+                          DataColumn(label: Text('Keterangan')),
                         ],
                         rows: rows.map((record) {
                           return DataRow(
