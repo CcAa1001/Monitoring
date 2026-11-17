@@ -21,12 +21,12 @@ class DesktopItemsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DesktopSimpleListPage<Item>(
-      title: 'Barang',
-      subtitle: 'Kelola katalog peralatan, registrasi QR, dan penempatan barang saat ini.',
-      actionLabel: 'Daftarkan barang',
+      title: tr('Barang'),
+      subtitle: tr('Kelola katalog peralatan, registrasi QR, dan penempatan barang saat ini.'),
+      actionLabel: tr('Daftarkan barang'),
       onAction: canManage ? onAdd : null,
       items: items,
-      searchHint: 'Cari nama, QR, nomor seri, merek, model, kategori, atau lokasi',
+      searchHint: tr('Cari nama, QR, nomor seri, merek, model, kategori, atau lokasi'),
       searchText: (item) => <String>[
         item.name,
         item.qrCode,
@@ -39,14 +39,8 @@ class DesktopItemsPage extends StatelessWidget {
       ].join(' '),
       itemBuilder: (item) => DesktopSimpleTile(
         title: item.name,
-        subtitle: '${item.qrCode} | ${item.serialNumber ?? 'Tanpa nomor seri'} | ${item.brand ?? 'Tanpa merek'} | ${item.currentLocation}',
-        status: item.isOverdue
-            ? 'Terlambat'
-            : item.isDueSoon
-                ? 'Segera jatuh tempo'
-                : item.status == ItemStatus.available
-                    ? 'Tersedia'
-                    : 'Dipinjam',
+        subtitle: '${item.qrCode} | ${item.serialNumber ?? tr('Tanpa nomor seri')} | ${item.brand ?? tr('Tanpa merek')} | ${item.currentLocation}',
+        status: itemStatusLabel(item),
         onHistory: () => onViewHistory(item),
         onEdit: canManage ? () => onEdit(item: item) : null,
         onDelete: canManage ? () => onDelete(item) : null,
@@ -114,7 +108,7 @@ class _DesktopSimpleListPageState<T> extends State<DesktopSimpleListPage<T>> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      'Daftar ${widget.title}',
+                      tr('Daftar {title}', {'title': widget.title}),
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),
@@ -130,7 +124,7 @@ class _DesktopSimpleListPageState<T> extends State<DesktopSimpleListPage<T>> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Menampilkan ${filteredItems.length} dari ${widget.items.length} data.',
+                tr('Menampilkan {shown} dari {total} data.', {'shown': filteredItems.length, 'total': widget.items.length}),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 18),
@@ -178,7 +172,7 @@ class _DesktopListEmptyState extends StatelessWidget {
         border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Text(
-        'Tidak ada data yang cocok dengan pencarian saat ini.',
+        tr('Tidak ada data yang cocok dengan pencarian saat ini.'),
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );

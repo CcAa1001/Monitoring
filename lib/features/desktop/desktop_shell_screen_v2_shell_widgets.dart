@@ -76,17 +76,17 @@ class _LoadErrorState extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text(
-                'Data desktop gagal dimuat',
-                style: TextStyle(
+              Text(
+                tr('Data desktop gagal dimuat'),
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                'Layar desktop dapat diakses, tetapi salah satu sumber data gagal dimuat. Hal ini sering terjadi jika tabel atau kolom Supabase yang baru belum dibuat.',
-                style: TextStyle(height: 1.5),
+              Text(
+                tr('Layar desktop dapat diakses, tetapi salah satu sumber data gagal dimuat. Hal ini sering terjadi jika tabel atau kolom Supabase yang baru belum dibuat.'),
+                style: const TextStyle(height: 1.5),
               ),
               const SizedBox(height: 16),
               Text(
@@ -100,7 +100,7 @@ class _LoadErrorState extends StatelessWidget {
               FilledButton.icon(
                 onPressed: () => onRetry(),
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Muat ulang'),
+                label: Text(tr('Muat ulang')),
               ),
             ],
           ),
@@ -140,7 +140,7 @@ class _DesktopTopBar extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                DateFormat('EEEE, dd MMM yyyy', 'id_ID').format(DateTime.now()),
+                DateFormat('EEEE, dd MMM yyyy', dateLocale).format(DateTime.now()),
                 style: TextStyle(
                   color: isDark ? const Color(0xFF9FA8BF) : const Color(0xFF7E8698),
                   fontWeight: FontWeight.w600,

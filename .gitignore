@@ -9,5 +9,6 @@ android/
 ios/
 linux/
 macos/
-web/
 windows/
+# Firebase CLI deploy cache
+.firebase/

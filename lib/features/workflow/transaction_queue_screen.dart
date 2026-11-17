@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../l10n/app_language.dart';
 import '../../data/inventory_repository.dart';
 import '../../models/allowed_location.dart';
 import '../../models/app_user.dart';
 import '../../models/item.dart';
 import '../../models/pairing_session.dart';
+import '../../theme/status_colors.dart';
 import '../scan/scan_screen.dart';
 import 'action_flow_screen.dart';
 
@@ -42,7 +44,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
   DateTime? _borrowExpectedReturnAt;
 
   bool get _isBorrow => widget.mode == WorkflowMode.borrow;
-  String get _screenTitle => _isBorrow ? 'Pinjam barang' : 'Kembalikan barang';
+  String get _screenTitle => _isBorrow ? tr('Pinjam barang') : tr('Kembalikan barang');
   PairActionMode get _pairMode => _isBorrow ? PairActionMode.borrow : PairActionMode.returnItem;
 
   @override
@@ -133,7 +135,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     final alreadyExists = _drafts.any((draft) => draft.item.qrCode.toUpperCase() == item.qrCode.toUpperCase());
     if (alreadyExists) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${item.qrCode} sudah ada di antrean ini.')),
+        SnackBar(content: Text(tr('{qr} sudah ada di antrean ini.', {'qr': item.qrCode}))),
       );
       return;
     }
@@ -162,7 +164,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     if (!mounted) return;
     if (item == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kode QR tidak ditemukan di sistem.')),
+        SnackBar(content: Text(tr('Kode QR tidak ditemukan di sistem.'))),
       );
       return;
     }
@@ -188,9 +190,9 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     var restored = false;
     await ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${draft.item.name} dihapus dari antrean.'),
+        content: Text(tr('{name} dihapus dari antrean.', {'name': draft.item.name})),
         action: SnackBarAction(
-          label: 'Urungkan',
+          label: tr('Urungkan'),
           onPressed: () {
             if (!mounted) return;
             restored = true;
@@ -272,8 +274,8 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
         SnackBar(
           content: Text(
             _isBorrow
-                ? 'Transaksi peminjaman disimpan untuk $processedCount barang.'
-                : 'Transaksi pengembalian disimpan untuk $processedCount barang.',
+                ? tr('Transaksi peminjaman disimpan untuk {count} barang.', {'count': processedCount})
+                : tr('Transaksi pengembalian disimpan untuk {count} barang.', {'count': processedCount}),
           ),
         ),
       );
@@ -282,7 +284,7 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Transaksi gagal disimpan. Periksa koneksi lalu coba lagi. $error'),
+          content: Text(tr('Transaksi gagal disimpan. Periksa koneksi lalu coba lagi. {error}', {'error': error})),
         ),
       );
     } finally {
@@ -294,84 +296,103 @@ class _TransactionQueueScreenState extends State<TransactionQueueScreen> {
     }
   }
 
+  // ---- Display-only helpers (mirror _canSubmitBorrow / _canSubmitReturn) ----
+
+  /// 0 = Pindai aset, 1 = Pilih tujuan, 2 = Konfirmasi.
+  int get _currentStep {
+    if (_drafts.isEmpty) return 0;
+    final destinationChosen = _isBorrow
+        ? _borrowDestinationLine != null
+        : _drafts.every((draft) => draft.selectedLocation != null);
+    return destinationChosen ? 2 : 1;
+  }
+
+  /// Why the confirm button is disabled, or null when it is enabled.
+  String? get _blockedReason {
+    if (_drafts.isEmpty) return tr('Pindai minimal 1 aset untuk melanjutkan.');
+    if (_isBorrow) {
+      final alreadyOut = _drafts.where((draft) => draft.item.status != ItemStatus.available).length;
+      if (alreadyOut > 0) return tr('{count} aset sedang dipinjam. Hapus dari antrean untuk melanjutkan.', {'count': alreadyOut});
+      if (_borrowDestinationLine == null) return tr('Pilih line tujuan untuk melanjutkan.');
+      return null;
+    }
+    final alreadyIn = _drafts.where((draft) => draft.item.status != ItemStatus.borrowed).length;
+    if (alreadyIn > 0) return tr('{count} aset sudah tersedia di rak. Hapus dari antrean untuk melanjutkan.', {'count': alreadyIn});
+    final missingRack = _drafts.where((draft) => draft.selectedLocation == null).length;
+    if (missingRack > 0) return tr('Pilih rak tujuan untuk {count} aset lagi.', {'count': missingRack});
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final canSubmit = _isBorrow ? _canSubmitBorrow : _canSubmitReturn;
     return Scaffold(
       appBar: AppBar(title: Text(_screenTitle)),
       body: FutureBuilder<List<AllowedLocation>>(
         future: _locationsFuture,
         builder: (context, snapshot) {
           final locations = snapshot.data ?? const <AllowedLocation>[];
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            children: <Widget>[
-              _SessionBanner(
-                isBorrow: _isBorrow,
-                currentUser: widget.currentUser,
-                pairingSession: _livePairingSession,
-                isRefreshingPair: _isRefreshingPair,
-                onRefreshPairing: () => _refreshPairingSession(),
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: _queueMaxWidth),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                children: <Widget>[
+                  _StepIndicator(currentStep: _currentStep),
+                  const SizedBox(height: 16),
+                  _ScanToolbar(
+                    currentUser: widget.currentUser,
+                    pairingSession: _livePairingSession,
+                    isRefreshingPair: _isRefreshingPair,
+                    onRefreshPairing: () => _refreshPairingSession(),
+                    onScanDesktop: _scanItemFromDesktop,
+                  ),
+                  const SizedBox(height: 16),
+                  _ScannedItemsSection(
+                    isBorrow: _isBorrow,
+                    drafts: _drafts,
+                    racks: _isBorrow ? const <AllowedLocation>[] : locations,
+                    onLocationSelected: (draft, location) {
+                      setState(() {
+                        draft.selectedLocation = location;
+                      });
+                    },
+                    onDescriptionChanged: () => setState(() {}),
+                    onRemove: _removeDraft,
+                  ),
+                  if (_isBorrow) ...<Widget>[
+                    const SizedBox(height: 16),
+                    _BorrowDestinationCard(
+                      selectedLine: _borrowDestinationLine,
+                      lines: locations,
+                      expectedReturnAt: _borrowExpectedReturnAt,
+                      onLineSelected: (line) {
+                        setState(() {
+                          _borrowDestinationLine = line;
+                        });
+                      },
+                      onDueDateSelected: (date) {
+                        setState(() {
+                          _borrowExpectedReturnAt = date;
+                        });
+                      },
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 16),
-              _ScanControlCard(
-                isBorrow: _isBorrow,
-                queueCount: _drafts.length,
-                onScanDesktop: _scanItemFromDesktop,
-              ),
-              const SizedBox(height: 16),
-              if (_isBorrow)
-                _BorrowQueueCard(
-                  drafts: _drafts,
-                  selectedLine: _borrowDestinationLine,
-                  lines: locations,
-                  expectedReturnAt: _borrowExpectedReturnAt,
-                  onLineSelected: (line) {
-                    setState(() {
-                      _borrowDestinationLine = line;
-                    });
-                  },
-                  onDueDateSelected: (date) {
-                    setState(() {
-                      _borrowExpectedReturnAt = date;
-                    });
-                  },
-                  onDescriptionChanged: () => setState(() {}),
-                  onRemove: _removeDraft,
-                )
-              else
-                _ReturnQueueCard(
-                  drafts: _drafts,
-                  racks: locations,
-                  onLocationSelected: (draft, location) {
-                    setState(() {
-                      draft.selectedLocation = location;
-                    });
-                  },
-                  onDescriptionChanged: () => setState(() {}),
-                  onRemove: _removeDraft,
-                ),
-              const SizedBox(height: 18),
-              FilledButton(
-                onPressed: _isSubmitting
-                    ? null
-                    : _isBorrow
-                        ? (_canSubmitBorrow ? _submit : null)
-                        : (_canSubmitReturn ? _submit : null),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(58),
-                ),
-                child: _isSubmitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(_isBorrow ? 'Konfirmasi pinjam' : 'Konfirmasi kembali'),
-              ),
-            ],
+            ),
           );
         },
+      ),
+      bottomNavigationBar: _ConfirmBar(
+        label: _isBorrow ? tr('Konfirmasi pinjam') : tr('Konfirmasi kembali'),
+        isSubmitting: _isSubmitting,
+        hint: _isSubmitting || canSubmit ? null : _blockedReason,
+        onConfirm: _isSubmitting || !canSubmit ? null : _submit,
       ),
     );
   }
 }
+
+const double _queueMaxWidth = 1100;

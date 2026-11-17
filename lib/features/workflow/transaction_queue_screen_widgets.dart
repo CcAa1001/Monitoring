@@ -18,138 +18,146 @@ class _QueuedItemDraft {
   }
 }
 
-class _SessionBanner extends StatelessWidget {
-  const _SessionBanner({
-    required this.isBorrow,
-    required this.currentUser,
-    required this.pairingSession,
-    required this.isRefreshingPair,
-    required this.onRefreshPairing,
-  });
+/// Three-step progress: Pindai aset → Pilih tujuan → Konfirmasi.
+class _StepIndicator extends StatelessWidget {
+  const _StepIndicator({required this.currentStep});
 
-  final bool isBorrow;
-  final AppUser currentUser;
-  final PairingSession? pairingSession;
-  final bool isRefreshingPair;
-  final Future<void> Function() onRefreshPairing;
+  /// 0-based index of the step the user is on.
+  final int currentStep;
+
+  static const List<String> _labels = <String>['Pindai aset', 'Pilih tujuan', 'Konfirmasi'];
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? <Color>[const Color(0xFF111827), const Color(0xFF181B2F)]
-              : <Color>[Colors.white, const Color(0xFFF8F6FF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            isBorrow ? 'Antrean pinjam' : 'Antrean kembali',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Pindaian desktop memakai nama ${currentUser.name}. Pindaian ponsel tetap memakai nama pengguna ponsel yang tersambung saat dikirim.',
-            style: TextStyle(
-              height: 1.5,
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
+    final done = StatusColors.of(context).available;
+    final children = <Widget>[];
+    for (var i = 0; i < _labels.length; i++) {
+      final isDone = i < currentStep;
+      final isActive = i == currentStep;
+      final color = isDone ? done : (isActive ? colorScheme.primary : colorScheme.onSurfaceVariant);
+      children.add(
+        Expanded(
+          child: Row(
             children: <Widget>[
-              Expanded(
+              Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDone || isActive ? color : Colors.transparent,
+                  border: Border.all(color: color, width: 2),
+                ),
+                child: isDone
+                    ? Icon(Icons.check_rounded, size: 18, color: colorScheme.surface)
+                    : Text(
+                        '${i + 1}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: isActive ? colorScheme.onPrimary : color,
+                        ),
+                      ),
+              ),
+              const SizedBox(width: 10),
+              Flexible(
                 child: Text(
-                  pairingSession == null
-                      ? 'Belum ada ponsel yang tersambung. Anda tetap dapat memindai di PC ini.'
-                      : 'Kode sambungan ${pairingSession!.code} tersambung ke ${pairingSession!.connectedDeviceName ?? 'sebuah ponsel'}.',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  tr(_labels[i]),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                    color: isActive ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
-              IconButton(
-                onPressed: pairingSession == null || isRefreshingPair ? null : () => onRefreshPairing(),
-                icon: isRefreshingPair
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh_rounded),
-              ),
+              if (i < _labels.length - 1)
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    color: isDone ? done : colorScheme.outline,
+                  ),
+                ),
             ],
           ),
-        ],
+        ),
+      );
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colorScheme.outline),
       ),
+      child: Row(children: children),
     );
   }
 }
 
-class _ScanControlCard extends StatelessWidget {
-  const _ScanControlCard({
-    required this.isBorrow,
-    required this.queueCount,
+/// Compact scan controls + pairing status (secondary to the scanned list).
+class _ScanToolbar extends StatelessWidget {
+  const _ScanToolbar({
+    required this.currentUser,
+    required this.pairingSession,
+    required this.isRefreshingPair,
+    required this.onRefreshPairing,
     required this.onScanDesktop,
   });
 
-  final bool isBorrow;
-  final int queueCount;
+  final AppUser currentUser;
+  final PairingSession? pairingSession;
+  final bool isRefreshingPair;
+  final Future<void> Function() onRefreshPairing;
   final VoidCallback onScanDesktop;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final pairText = pairingSession == null
+        ? tr('Belum ada ponsel yang tersambung. Anda tetap dapat memindai di PC ini.')
+        : tr('Kode sambungan {code} tersambung ke {device}.', {'code': pairingSession!.code, 'device': pairingSession!.connectedDeviceName ?? tr('sebuah ponsel')});
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colorScheme.outline),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: <Widget>[
-          Text(
-            isBorrow ? 'Pindai barang untuk dipinjam' : 'Pindai barang untuk dikembalikan',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: colorScheme.onSurface,
+          FilledButton.icon(
+            onPressed: onScanDesktop,
+            icon: const Icon(Icons.qr_code_scanner_rounded),
+            label: Text(tr('Pindai di PC ini')),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  pairText,
+                  style: TextStyle(fontWeight: FontWeight.w700, color: colorScheme.onSurface),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  tr('Pindaian PC dicatat atas nama {name}; pindaian ponsel memakai nama pengguna ponsel.', {'name': currentUser.name}),
+                  style: TextStyle(fontSize: 12.5, color: colorScheme.onSurfaceVariant),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            isBorrow
-                ? 'Pindaian ponsel dan desktop akan terus menambah barang ke satu antrean pinjam. Pilih line setelah semua barang dipindai.'
-                : 'Setiap barang yang dipindai membuat baris pengembalian sendiri. Anda tetap dapat memindai meskipun kolom keterangan lain sedang aktif.',
-            style: const TextStyle(height: 1.5),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: onScanDesktop,
-                  icon: const Icon(Icons.qr_code_scanner_rounded),
-                  label: const Text('Pindai di PC ini'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              _CountPill(label: '$queueCount barang'),
-            ],
+          IconButton(
+            tooltip: tr('Perbarui status sambungan'),
+            onPressed: pairingSession == null || isRefreshingPair ? null : () => onRefreshPairing(),
+            icon: isRefreshingPair
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.refresh_rounded),
           ),
         ],
       ),
@@ -157,24 +165,21 @@ class _ScanControlCard extends StatelessWidget {
   }
 }
 
-class _BorrowQueueCard extends StatelessWidget {
-  const _BorrowQueueCard({
+/// The main element of the screen: every scanned asset in the queue.
+class _ScannedItemsSection extends StatelessWidget {
+  const _ScannedItemsSection({
+    required this.isBorrow,
     required this.drafts,
-    required this.selectedLine,
-    required this.lines,
-    required this.expectedReturnAt,
-    required this.onLineSelected,
-    required this.onDueDateSelected,
+    required this.racks,
+    required this.onLocationSelected,
     required this.onDescriptionChanged,
     required this.onRemove,
   });
 
+  final bool isBorrow;
   final List<_QueuedItemDraft> drafts;
-  final String? selectedLine;
-  final List<AllowedLocation> lines;
-  final DateTime? expectedReturnAt;
-  final ValueChanged<String> onLineSelected;
-  final ValueChanged<DateTime?> onDueDateSelected;
+  final List<AllowedLocation> racks;
+  final void Function(_QueuedItemDraft draft, String location) onLocationSelected;
   final VoidCallback onDescriptionChanged;
   final Future<void> Function(_QueuedItemDraft draft) onRemove;
 
@@ -182,25 +187,120 @@ class _BorrowQueueCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.45), width: 1.5),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: colorScheme.primary.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
-            'Antrean pinjam',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  tr('Aset dipindai'),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  tr('{count} aset', {'count': drafts.length}),
+                  style: TextStyle(
+                    color: colorScheme.onPrimary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Semua barang yang dipindai di bawah akan dipinjamkan ke line yang sama saat Anda konfirmasi.',
-            style: TextStyle(height: 1.5),
+          const SizedBox(height: 4),
+          Text(
+            isBorrow
+                ? tr('Semua aset di bawah akan dipinjamkan ke line yang sama saat dikonfirmasi.')
+                : tr('Pilih rak tujuan untuk setiap aset yang dikembalikan.'),
+            style: TextStyle(color: colorScheme.onSurfaceVariant, height: 1.4),
           ),
           const SizedBox(height: 16),
+          if (drafts.isEmpty)
+            _EmptyQueue(
+              text: isBorrow
+                  ? tr('Belum ada aset di antrean pinjam. Pindai dari ponsel atau dari PC ini.')
+                  : tr('Belum ada aset di antrean kembali. Pindai dari ponsel atau dari PC ini.'),
+            )
+          else
+            ...drafts.map(
+              (draft) => _QueuedItemTile(
+                draft: draft,
+                racks: isBorrow ? null : racks,
+                onLocationSelected: (location) => onLocationSelected(draft, location),
+                onChanged: onDescriptionChanged,
+                onRemove: () {
+                  onRemove(draft);
+                },
+                descriptionHint: isBorrow
+                    ? tr('Contoh: untuk setup, dicek sebelum dikeluarkan')
+                    : tr('Contoh: gagang sudah dicek, dikembalikan setelah dibersihkan'),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Borrow step 2: destination line and optional due date.
+class _BorrowDestinationCard extends StatelessWidget {
+  const _BorrowDestinationCard({
+    required this.selectedLine,
+    required this.lines,
+    required this.expectedReturnAt,
+    required this.onLineSelected,
+    required this.onDueDateSelected,
+  });
+
+  final String? selectedLine;
+  final List<AllowedLocation> lines;
+  final DateTime? expectedReturnAt;
+  final ValueChanged<String> onLineSelected;
+  final ValueChanged<DateTime?> onDueDateSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colorScheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            tr('Tujuan peminjaman'),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: colorScheme.onSurface),
+          ),
+          const SizedBox(height: 14),
           DropdownButtonFormField<String>(
             initialValue: selectedLine,
             items: lines
@@ -216,8 +316,8 @@ class _BorrowQueueCard extends StatelessWidget {
                 onLineSelected(value);
               }
             },
-            decoration: const InputDecoration(
-              labelText: 'Line tujuan',
+            decoration: InputDecoration(
+              labelText: tr('Line tujuan'),
             ),
           ),
           const SizedBox(height: 16),
@@ -225,11 +325,11 @@ class _BorrowQueueCard extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Batas pengembalian'),
+                  decoration: InputDecoration(labelText: tr('Batas pengembalian')),
                   child: Text(
                     expectedReturnAt == null
-                        ? 'Tanpa batas waktu'
-                        : DateFormat('dd MMM yyyy', 'id_ID').format(expectedReturnAt!),
+                        ? tr('Tanpa batas waktu')
+                        : DateFormat('dd MMM yyyy', dateLocale).format(expectedReturnAt!),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -248,31 +348,17 @@ class _BorrowQueueCard extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.event_rounded),
-                label: const Text('Atur batas waktu'),
+                label: Text(tr('Atur batas waktu')),
               ),
               if (expectedReturnAt != null) ...<Widget>[
                 const SizedBox(width: 10),
                 IconButton(
                   onPressed: () => onDueDateSelected(null),
                   icon: const Icon(Icons.close_rounded),
-                  tooltip: 'Hapus batas waktu',
+                  tooltip: tr('Hapus batas waktu'),
                 ),
               ],
             ],
-          ),
-          const SizedBox(height: 16),
-          if (drafts.isEmpty)
-            const _EmptyQueue(
-              text: 'Belum ada barang di antrean pinjam. Pindai dari ponsel atau dari PC ini.',
-            ),
-          ...drafts.map(
-            (draft) => _QueuedItemTile(
-              draft: draft,
-              onChanged: onDescriptionChanged,
-              onRemove: () {
-                onRemove(draft);
-              },
-            ),
           ),
         ],
       ),
@@ -280,104 +366,24 @@ class _BorrowQueueCard extends StatelessWidget {
   }
 }
 
-class _ReturnQueueCard extends StatelessWidget {
-  const _ReturnQueueCard({
-    required this.drafts,
-    required this.racks,
-    required this.onLocationSelected,
-    required this.onDescriptionChanged,
-    required this.onRemove,
-  });
-
-  final List<_QueuedItemDraft> drafts;
-  final List<AllowedLocation> racks;
-  final void Function(_QueuedItemDraft draft, String location) onLocationSelected;
-  final VoidCallback onDescriptionChanged;
-  final Future<void> Function(_QueuedItemDraft draft) onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Column(
-      children: <Widget>[
-        if (drafts.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
-            ),
-            child: const _EmptyQueue(
-              text: 'Belum ada barang di antrean kembali. Pindai dari ponsel atau dari PC ini.',
-            ),
-          ),
-        ...drafts.map(
-          (draft) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: colorScheme.outline.withValues(alpha: 0.55)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _QueuedItemHeader(
-                    draft: draft,
-                    onRemove: () {
-                      onRemove(draft);
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: racks.map((rack) {
-                      final selected = draft.selectedLocation == rack.code;
-                      return ChoiceChip(
-                        label: Text(rack.code),
-                        selected: selected,
-                        onSelected: (_) => onLocationSelected(draft, rack.code),
-                        selectedColor: colorScheme.primary,
-                        labelStyle: TextStyle(
-                          color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 14),
-                  TextField(
-                    controller: draft.descriptionController,
-                    onChanged: (_) => onDescriptionChanged(),
-                    decoration: const InputDecoration(
-                      labelText: 'Keterangan atau catatan (opsional)',
-                      hintText: 'Contoh: gagang sudah dicek, dikembalikan setelah dibersihkan',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _QueuedItemTile extends StatelessWidget {
   const _QueuedItemTile({
     required this.draft,
+    required this.racks,
+    required this.onLocationSelected,
     required this.onChanged,
     required this.onRemove,
+    required this.descriptionHint,
   });
 
   final _QueuedItemDraft draft;
+
+  /// Rack choices for return mode; null in borrow mode.
+  final List<AllowedLocation>? racks;
+  final ValueChanged<String> onLocationSelected;
   final VoidCallback onChanged;
   final VoidCallback onRemove;
+  final String descriptionHint;
 
   @override
   Widget build(BuildContext context) {
@@ -388,21 +394,48 @@ class _QueuedItemTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.45)),
+        border: Border.all(color: colorScheme.outline),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _QueuedItemHeader(
             draft: draft,
             onRemove: onRemove,
           ),
+          if (racks != null) ...<Widget>[
+            const SizedBox(height: 14),
+            Text(
+              tr('Rak tujuan'),
+              style: TextStyle(fontWeight: FontWeight.w700, color: colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: racks!.map((rack) {
+                final selected = draft.selectedLocation == rack.code;
+                return ChoiceChip(
+                  label: Text(rack.code),
+                  selected: selected,
+                  onSelected: (_) => onLocationSelected(rack.code),
+                  selectedColor: colorScheme.primary,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  labelStyle: TextStyle(
+                    color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
           const SizedBox(height: 14),
           TextField(
             controller: draft.descriptionController,
             onChanged: (_) => onChanged(),
-            decoration: const InputDecoration(
-              labelText: 'Keterangan atau catatan (opsional)',
-              hintText: 'Contoh: untuk setup, dicek sebelum dikeluarkan',
+            decoration: InputDecoration(
+              labelText: tr('Keterangan atau catatan (opsional)'),
+              hintText: descriptionHint,
             ),
           ),
         ],
@@ -422,8 +455,9 @@ class _QueuedItemHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAvailable = draft.item.status == ItemStatus.available;
     final colorScheme = Theme.of(context).colorScheme;
+    final statusColors = StatusColors.of(context);
+    final tone = itemStatusTone(draft.item);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -435,30 +469,39 @@ class _QueuedItemHeader extends StatelessWidget {
                 draft.item.name,
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
-                  fontSize: 16,
+                  fontSize: 18,
                   color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 4),
-              Text('QR: ${draft.item.qrCode}'),
-              const SizedBox(height: 2),
-              Text('Lokasi saat ini: ${draft.item.currentLocation}'),
-              const SizedBox(height: 2),
-              Text('Dicatat sebagai: ${draft.actorName}'),
-              const SizedBox(height: 6),
-              _CountPill(label: isAvailable ? 'Tersedia' : 'Dipinjam'),
+              Text(
+                'QR ${draft.item.qrCode} · ${draft.item.currentLocation} · ${draft.actorName}',
+                style: TextStyle(color: colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  _Pill(
+                    label: itemStatusLabel(draft.item),
+                    foreground: statusColors.color(tone),
+                    background: statusColors.background(tone),
+                  ),
+                  _Pill(
+                    label: draft.fromPairing ? tr('Pindai ponsel') : tr('Pindai PC'),
+                    foreground: colorScheme.onSurfaceVariant,
+                    background: colorScheme.outline.withValues(alpha: 0.5),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
-        Column(
-          children: <Widget>[
-            _CountPill(label: draft.fromPairing ? 'Pindai ponsel' : 'Pindai PC'),
-            const SizedBox(height: 8),
-            IconButton(
-              onPressed: onRemove,
-              icon: const Icon(Icons.close_rounded),
-            ),
-          ],
+        IconButton(
+          tooltip: tr('Hapus dari antrean'),
+          onPressed: onRemove,
+          icon: const Icon(Icons.close_rounded),
         ),
       ],
     );
@@ -475,38 +518,130 @@ class _EmptyQueue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Text(
-      text,
-      style: TextStyle(
-        height: 1.5,
-        color: colorScheme.onSurfaceVariant,
-        fontWeight: FontWeight.w600,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colorScheme.outline),
+      ),
+      child: Column(
+        children: <Widget>[
+          Icon(Icons.qr_code_scanner_rounded, size: 40, color: colorScheme.onSurfaceVariant),
+          const SizedBox(height: 10),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              height: 1.5,
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _CountPill extends StatelessWidget {
-  const _CountPill({
+class _Pill extends StatelessWidget {
+  const _Pill({
     required this.label,
+    required this.foreground,
+    required this.background,
   });
 
   final String label;
+  final Color foreground;
+  final Color background;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: colorScheme.primary.withValues(alpha: 0.12),
+        color: background,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: colorScheme.primary,
+          color: foreground,
           fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+/// Bottom bar with the confirm button and, when it is disabled, why.
+class _ConfirmBar extends StatelessWidget {
+  const _ConfirmBar({
+    required this.label,
+    required this.isSubmitting,
+    required this.hint,
+    required this.onConfirm,
+  });
+
+  final String label;
+  final bool isSubmitting;
+  final String? hint;
+  final VoidCallback? onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(top: BorderSide(color: colorScheme.outline)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Align(
+          alignment: Alignment.topCenter,
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: _queueMaxWidth),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  if (hint != null) ...<Widget>[
+                    Row(
+                      children: <Widget>[
+                        Icon(Icons.info_outline_rounded, size: 18, color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            hint!,
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                  FilledButton(
+                    onPressed: onConfirm,
+                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+                    child: isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(label),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

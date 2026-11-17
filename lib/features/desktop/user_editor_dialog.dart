@@ -63,24 +63,24 @@ class _UserEditorDialogState extends State<UserEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.user == null ? 'Tambah pengguna' : 'Ubah pengguna'),
+      title: Text(widget.user == null ? tr('Tambah pengguna') : tr('Ubah pengguna')),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _nameController, label: 'Nama lengkap'),
+            _DialogField(controller: _nameController, label: tr('Nama lengkap')),
             const SizedBox(height: 10),
-            _DialogField(controller: _badgeController, label: 'ID badge'),
+            _DialogField(controller: _badgeController, label: tr('ID badge')),
             const SizedBox(height: 10),
-            _DialogField(controller: _passwordController, label: 'Kata sandi'),
+            _DialogField(controller: _passwordController, label: tr('Kata sandi')),
             const SizedBox(height: 10),
             DropdownButtonFormField<UserRole>(
               initialValue: _role,
-              items: const <DropdownMenuItem<UserRole>>[
-                DropdownMenuItem(value: UserRole.admin, child: Text('Admin')),
-                DropdownMenuItem(value: UserRole.operator, child: Text('Operator')),
-                DropdownMenuItem(value: UserRole.viewer, child: Text('Peninjau')),
+              items: <DropdownMenuItem<UserRole>>[
+                const DropdownMenuItem(value: UserRole.admin, child: Text('Admin')),
+                const DropdownMenuItem(value: UserRole.operator, child: Text('Operator')),
+                DropdownMenuItem(value: UserRole.viewer, child: Text(tr('Peninjau'))),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -89,11 +89,11 @@ class _UserEditorDialogState extends State<UserEditorDialog> {
                   });
                 }
               },
-              decoration: const InputDecoration(labelText: 'Peran'),
+              decoration: InputDecoration(labelText: tr('Peran')),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Aktif'),
+              title: Text(tr('Aktif')),
               value: _isActive,
               onChanged: (value) {
                 setState(() {
@@ -105,8 +105,8 @@ class _UserEditorDialogState extends State<UserEditorDialog> {
         ),
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Batal')),
-        FilledButton(onPressed: _save, child: const Text('Simpan')),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(tr('Batal'))),
+        FilledButton(onPressed: _save, child: Text(tr('Simpan'))),
       ],
     );
   }

@@ -24,9 +24,9 @@ class _DesktopRolesPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView(
       children: <Widget>[
-        const DesktopSectionHeader(
-          title: 'Peran',
-          subtitle: 'Tentukan tanggung jawab untuk admin, operator, dan peninjau (hanya baca).',
+        DesktopSectionHeader(
+          title: tr('Peran'),
+          subtitle: tr('Tentukan tanggung jawab untuk admin, operator, dan peninjau (hanya baca).'),
         ),
         const SizedBox(height: 18),
         DesktopPanel(
@@ -37,20 +37,20 @@ class _DesktopRolesPage extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      'Matriks izin',
+                      tr('Matriks izin'),
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     ),
                   ),
                   FilledButton.icon(
                     onPressed: () => onAddRole(),
                     icon: const Icon(Icons.add_rounded),
-                    label: const Text('Tambah peran'),
+                    label: Text(tr('Tambah peran')),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
               Text(
-                'Setiap peran di bawah menjelaskan apa yang dapat ditampilkan, diubah, dan dikirim terminal selama pengguna tersebut masuk.',
+                tr('Setiap peran di bawah menjelaskan apa yang dapat ditampilkan, diubah, dan dikirim terminal selama pengguna tersebut masuk.'),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 18),
@@ -86,7 +86,7 @@ class _DesktopRolesPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  role.name,
+                                  tr(role.name),
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w800,
@@ -95,7 +95,7 @@ class _DesktopRolesPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '${role.permissions.length} izin menu dikonfigurasi',
+                                  tr('{count} izin menu dikonfigurasi', {'count': role.permissions.length}),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
@@ -116,7 +116,7 @@ class _DesktopRolesPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
-                                  permission,
+                                  tr(permission),
                                   style: TextStyle(
                                     color: isDark ? const Color(0xFFD3D8FF) : const Color(0xFF5B39EA),
                                     fontWeight: FontWeight.w700,

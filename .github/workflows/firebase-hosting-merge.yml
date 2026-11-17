@@ -1,0 +1,52 @@
+# Builds the Flutter web app and deploys it to Firebase Hosting (live site)
+# every time code lands on the main branch.
+#
+# One-time setup: add the repository secret
+#   FIREBASE_SERVICE_ACCOUNT_MONITORING_APP_WEB
+# (see the setup steps in the project notes / chat).
+
+name: Deploy to Firebase Hosting (live)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # also allows a manual run from the Actions tab
+
+# Never run two live deploys at the same time; a newer push wins.
+concurrency:
+  group: firebase-hosting-live
+  cancel-in-progress: true
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.50.0
+          cache: true
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Analyze (fails on errors and warnings only)
+        run: flutter analyze --no-fatal-infos
+
+      - name: Build web (release)
+        run: flutter build web --release
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONITORING_APP_WEB }}
+          projectId: monitoring-app-web
+          channelId: live

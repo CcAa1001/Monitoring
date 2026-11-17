@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../l10n/app_language.dart';
+
 class ScanScreen extends StatefulWidget {
   const ScanScreen({
     super.key,
@@ -36,7 +38,7 @@ class _ScanScreenState extends State<ScanScreen> {
         final success = await widget.onDetected!(rawValue);
         if (!mounted) return;
         setState(() {
-          _statusText = success ? 'Pindai berhasil' : 'Pindai gagal';
+          _statusText = success ? tr('Pindai berhasil') : tr('Pindai gagal');
         });
         await Future<void>.delayed(const Duration(milliseconds: 900));
       } finally {
@@ -59,7 +61,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Pindai kode QR'),
+        title: Text(tr('Pindai kode QR')),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),
@@ -89,7 +91,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 margin: const EdgeInsets.only(top: 24),
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 decoration: BoxDecoration(
-                  color: _statusText == 'Pindai berhasil' ? const Color(0xFF16C098) : const Color(0xFFEA5455),
+                  color: _statusText == tr('Pindai berhasil') ? const Color(0xFF16C098) : const Color(0xFFEA5455),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
@@ -112,9 +114,9 @@ class _ScanScreenState extends State<ScanScreen> {
               ),
               child: Text(
                 widget.allowContinuous
-                    ? 'Arahkan kamera ke setiap kode QR. Pemindai akan tetap terbuka setelah setiap pindaian berhasil.'
-                    : 'Arahkan kamera ke kode QR. Aplikasi akan lanjut otomatis setelah pindaian berhasil.',
-                style: TextStyle(
+                    ? tr('Arahkan kamera ke setiap kode QR. Pemindai akan tetap terbuka setelah setiap pindaian berhasil.')
+                    : tr('Arahkan kamera ke kode QR. Aplikasi akan lanjut otomatis setelah pindaian berhasil.'),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   height: 1.5,

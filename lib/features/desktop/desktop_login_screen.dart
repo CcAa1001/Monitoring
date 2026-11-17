@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_language.dart';
+import '../../l10n/language_toggle.dart';
 import '../../data/inventory_repository.dart';
 import '../../models/app_user.dart';
 
@@ -41,7 +43,7 @@ class _DesktopLoginScreenState extends State<DesktopLoginScreen> {
 
     if (user == null) {
       setState(() {
-        _error = 'ID badge atau kata sandi salah.';
+        _error = tr('ID badge atau kata sandi salah.');
       });
       return;
     }
@@ -62,25 +64,29 @@ class _DesktopLoginScreenState extends State<DesktopLoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text(
-                    'Masuk ruang peralatan',
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: LanguageToggleButton(),
+                  ),
+                  Text(
+                    tr('Masuk ruang peralatan'),
+                    style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Gunakan ID badge dan kata sandi Anda untuk mengakses terminal resmi ruang peralatan.',
-                    style: TextStyle(height: 1.5),
+                  Text(
+                    tr('Gunakan ID badge dan kata sandi Anda untuk mengakses terminal resmi ruang peralatan.'),
+                    style: const TextStyle(height: 1.5),
                   ),
                   const SizedBox(height: 20),
                   TextField(
                     controller: _badgeController,
-                    decoration: const InputDecoration(labelText: 'ID badge'),
+                    decoration: InputDecoration(labelText: tr('ID badge')),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Kata sandi'),
+                    decoration: InputDecoration(labelText: tr('Kata sandi')),
                   ),
                   if (_error != null) ...<Widget>[
                     const SizedBox(height: 10),
@@ -97,7 +103,7 @@ class _DesktopLoginScreenState extends State<DesktopLoginScreen> {
                     width: double.infinity,
                     child: FilledButton(
                       onPressed: _submit,
-                      child: const Text('Masuk ke meja ruang peralatan'),
+                      child: Text(tr('Masuk ke meja ruang peralatan')),
                     ),
                   ),
                 ],

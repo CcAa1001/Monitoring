@@ -53,19 +53,19 @@ class _LocationEditorDialogState extends State<LocationEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.location == null ? 'Tambah lokasi' : 'Ubah lokasi'),
+      title: Text(widget.location == null ? tr('Tambah lokasi') : tr('Ubah lokasi')),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _codeController, label: 'Kode lokasi'),
+            _DialogField(controller: _codeController, label: tr('Kode lokasi')),
             const SizedBox(height: 10),
             DropdownButtonFormField<LocationType>(
               initialValue: _type,
-              items: const <DropdownMenuItem<LocationType>>[
-                DropdownMenuItem(value: LocationType.line, child: Text('Line')),
-                DropdownMenuItem(value: LocationType.rack, child: Text('Rak')),
+              items: <DropdownMenuItem<LocationType>>[
+                const DropdownMenuItem(value: LocationType.line, child: Text('Line')),
+                DropdownMenuItem(value: LocationType.rack, child: Text(tr('Rak'))),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -74,11 +74,11 @@ class _LocationEditorDialogState extends State<LocationEditorDialog> {
                   });
                 }
               },
-              decoration: const InputDecoration(labelText: 'Tipe'),
+              decoration: InputDecoration(labelText: tr('Tipe')),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Aktif'),
+              title: Text(tr('Aktif')),
               value: _isActive,
               onChanged: (value) {
                 setState(() {
@@ -90,8 +90,8 @@ class _LocationEditorDialogState extends State<LocationEditorDialog> {
         ),
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Batal')),
-        FilledButton(onPressed: _save, child: const Text('Simpan')),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(tr('Batal'))),
+        FilledButton(onPressed: _save, child: Text(tr('Simpan'))),
       ],
     );
   }

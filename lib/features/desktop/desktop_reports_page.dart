@@ -18,7 +18,7 @@ class DesktopReportsPage extends StatelessWidget {
     await Clipboard.setData(ClipboardData(text: csv));
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label disalin sebagai CSV.')),
+      SnackBar(content: Text(tr('{label} disalin sebagai CSV.', {'label': label}))),
     );
   }
 
@@ -29,42 +29,42 @@ class DesktopReportsPage extends StatelessWidget {
     final activeLocations = _reports.locationActivity(movements);
     return ListView(
       children: <Widget>[
-        const DesktopSectionHeader(
-          title: 'Laporan',
-          subtitle: 'Ekspor catatan operasional dan tinjau pola pergerakan peralatan harian.',
+        DesktopSectionHeader(
+          title: tr('Laporan'),
+          subtitle: tr('Ekspor catatan operasional dan tinjau pola pergerakan peralatan harian.'),
         ),
         const SizedBox(height: 18),
         Row(
           children: <Widget>[
             Expanded(
               child: DesktopMetricCard(
-                title: 'Tersedia',
+                title: tr('Tersedia'),
                 value: '${_reports.readyCount(items)}',
-                icon: Icons.inventory_2_rounded,
+                icon: Icons.inventory_2_rounded, tone: StatusTone.available,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: DesktopMetricCard(
-                title: 'Dipinjam',
+                title: tr('Dipinjam'),
                 value: '${_reports.borrowedCount(items)}',
-                icon: Icons.call_made_rounded,
+                icon: Icons.call_made_rounded, tone: StatusTone.borrowed,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: DesktopMetricCard(
-                title: 'Segera jatuh tempo',
+                title: tr('Segera jatuh tempo'),
                 value: '${_reports.dueSoonCount(items)}',
-                icon: Icons.schedule_rounded,
+                icon: Icons.schedule_rounded, tone: StatusTone.borrowed,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: DesktopMetricCard(
-                title: 'Terlambat',
+                title: tr('Terlambat'),
                 value: '${_reports.overdueCount(items)}',
-                icon: Icons.warning_amber_rounded,
+                icon: Icons.warning_amber_rounded, tone: StatusTone.overdue,
               ),
             ),
           ],
@@ -75,25 +75,25 @@ class DesktopReportsPage extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: _ReportListPanel(
-                title: 'Barang paling sering dipinjam',
+                title: tr('Barang paling sering dipinjam'),
                 rows: mostBorrowed,
-                emptyText: 'Belum ada aktivitas peminjaman yang tercatat.',
+                emptyText: tr('Belum ada aktivitas peminjaman yang tercatat.'),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _ReportListPanel(
-                title: 'Pengguna paling aktif',
+                title: tr('Pengguna paling aktif'),
                 rows: activeUsers,
-                emptyText: 'Belum ada aktivitas pengguna yang tercatat.',
+                emptyText: tr('Belum ada aktivitas pengguna yang tercatat.'),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _ReportListPanel(
-                title: 'Pergerakan lokasi',
+                title: tr('Pergerakan lokasi'),
                 rows: activeLocations,
-                emptyText: 'Belum ada pergerakan lokasi yang tercatat.',
+                emptyText: tr('Belum ada pergerakan lokasi yang tercatat.'),
               ),
             ),
           ],
@@ -104,12 +104,12 @@ class DesktopReportsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Ekspor',
+                tr('Ekspor'),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 10),
               Text(
-                'Salin data CSV untuk laporan spreadsheet, audit, dan ringkasan bulanan.',
+                tr('Salin data CSV untuk laporan spreadsheet, audit, dan ringkasan bulanan.'),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 18),
@@ -118,19 +118,19 @@ class DesktopReportsPage extends StatelessWidget {
                 runSpacing: 12,
                 children: <Widget>[
                   FilledButton.icon(
-                    onPressed: () => _copy(context, _reports.historyCsv(movements), 'Riwayat pergerakan'),
+                    onPressed: () => _copy(context, _reports.historyCsv(movements), tr('Riwayat pergerakan')),
                     icon: const Icon(Icons.download_rounded),
-                    label: const Text('Ekspor riwayat'),
+                    label: Text(tr('Ekspor riwayat')),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _copy(context, _reports.itemsCsv(items), 'Katalog barang'),
+                    onPressed: () => _copy(context, _reports.itemsCsv(items), tr('Katalog barang')),
                     icon: const Icon(Icons.inventory_2_rounded),
-                    label: const Text('Ekspor barang'),
+                    label: Text(tr('Ekspor barang')),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _copy(context, _reports.usersCsv(users), 'Daftar pengguna'),
+                    onPressed: () => _copy(context, _reports.usersCsv(users), tr('Daftar pengguna')),
                     icon: const Icon(Icons.people_alt_rounded),
-                    label: const Text('Ekspor pengguna'),
+                    label: Text(tr('Ekspor pengguna')),
                   ),
                 ],
               ),
@@ -178,7 +178,7 @@ class _ReportListPanel extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
-                    DesktopStatusChip(label: '${row.value}x'),
+                    DesktopStatusChip(label: '${row.value}x', color: Theme.of(context).colorScheme.primary),
                   ],
                 ),
               );

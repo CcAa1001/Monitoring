@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_language.dart';
 import '../../data/inventory_repository.dart';
 import '../../models/allowed_location.dart';
 import '../../models/app_user.dart';
 import '../../models/item.dart';
 import '../../models/pairing_session.dart';
+import '../../theme/status_colors.dart';
 import '../scan/scan_screen.dart';
 
 part 'action_flow_screen_widgets.dart';
@@ -49,11 +51,11 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
   Timer? _pairingPoller;
 
   bool get _isBorrow => widget.mode == WorkflowMode.borrow;
-  String get _screenTitle => _isBorrow ? 'Pinjam barang' : 'Kembalikan barang';
-  String get _locationTitle => _isBorrow ? 'Pilih line tujuan' : 'Pilih lokasi rak';
-  String get _actorLabel => _isBorrow ? 'Nama peminjam' : 'Nama pengembali';
-  String get _submitLabel => _isBorrow ? 'Konfirmasi pinjam' : 'Konfirmasi kembali';
-  String get _actionLabel => _isBorrow ? 'peminjaman' : 'pengembalian';
+  String get _screenTitle => _isBorrow ? tr('Pinjam barang') : tr('Kembalikan barang');
+  String get _locationTitle => _isBorrow ? tr('Pilih line tujuan') : tr('Pilih lokasi rak');
+  String get _actorLabel => _isBorrow ? tr('Nama peminjam') : tr('Nama pengembali');
+  String get _submitLabel => _isBorrow ? tr('Konfirmasi pinjam') : tr('Konfirmasi kembali');
+  String get _actionLabel => _isBorrow ? tr('peminjaman') : tr('pengembalian');
   String? get _actorName {
     final value = _actorController.text.trim();
     return value.isEmpty ? null : value;
@@ -78,20 +80,20 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
   String get _submitHelperText {
     if (_scannedItem == null) {
-      return 'Pindai barang terlebih dahulu.';
+      return tr('Pindai barang terlebih dahulu.');
     }
     if (!_hasValidStateForAction) {
       return _isBorrow
-          ? 'Barang ini sedang dipinjam, sehingga tidak dapat dipinjam lagi.'
-          : 'Barang ini sudah berada di ruang peralatan.';
+          ? tr('Barang ini sedang dipinjam, sehingga tidak dapat dipinjam lagi.')
+          : tr('Barang ini sudah berada di ruang peralatan.');
     }
     if (_actorName == null) {
-      return 'Pilih atau ketik nama ${_isBorrow ? 'peminjam' : 'pengembali'}.';
+      return tr('Pilih atau ketik nama {role}.', {'role': _isBorrow ? tr('peminjam') : tr('pengembali')});
     }
     if (_selectedLocation == null) {
-      return _isBorrow ? 'Pilih line tujuan.' : 'Pilih lokasi rak.';
+      return _isBorrow ? tr('Pilih line tujuan.') : tr('Pilih lokasi rak.');
     }
-    return 'Siap menyimpan catatan $_actionLabel ini.';
+    return tr('Siap menyimpan catatan {action} ini.', {'action': _actionLabel});
   }
 
   @override
@@ -176,7 +178,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
     if (item == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pindaian dari ponsel tersambung tidak ditemukan di sistem.')),
+        SnackBar(content: Text(tr('Pindaian dari ponsel tersambung tidak ditemukan di sistem.'))),
       );
       return;
     }
@@ -224,7 +226,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
     if (item == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Kode QR tidak ditemukan di sistem.')),
+        SnackBar(content: Text(tr('Kode QR tidak ditemukan di sistem.'))),
       );
       return;
     }
@@ -257,33 +259,33 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(_isBorrow ? 'Konfirmasi catatan peminjaman' : 'Konfirmasi catatan pengembalian'),
+        title: Text(_isBorrow ? tr('Konfirmasi catatan peminjaman') : tr('Konfirmasi catatan pengembalian')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              'Tinjau transaksi sebelum menyimpannya ke log pergerakan.',
+              tr('Tinjau transaksi sebelum menyimpannya ke log pergerakan.'),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
-            _SummaryRow(label: 'Barang', value: item.name),
+            _SummaryRow(label: tr('Barang'), value: item.name),
             _SummaryRow(label: 'QR', value: item.qrCode),
-            _SummaryRow(label: _isBorrow ? 'Peminjam' : 'Pengembali', value: actor),
+            _SummaryRow(label: _isBorrow ? tr('Peminjam') : tr('Pengembali'), value: actor),
             _SummaryRow(
-              label: _isBorrow ? 'Line tujuan' : 'Lokasi rak',
+              label: _isBorrow ? tr('Line tujuan') : tr('Lokasi rak'),
               value: location,
             ),
             _SummaryRow(
-              label: 'Status saat ini',
-              value: item.status == ItemStatus.available ? 'Tersedia' : 'Dipinjam',
+              label: tr('Status saat ini'),
+              value: item.status == ItemStatus.available ? tr('Tersedia') : tr('Dipinjam'),
             ),
           ],
         ),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Kembali'),
+            child: Text(tr('Kembali')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -303,21 +305,21 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
 
     if (item == null || actor == null || location == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lengkapi pindaian, nama, dan lokasi terlebih dahulu.')),
+        SnackBar(content: Text(tr('Lengkapi pindaian, nama, dan lokasi terlebih dahulu.'))),
       );
       return;
     }
 
     if (_isBorrow && item.status == ItemStatus.borrowed) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Barang ini sedang dipinjam dan tidak dapat dipinjam lagi.')),
+        SnackBar(content: Text(tr('Barang ini sedang dipinjam dan tidak dapat dipinjam lagi.'))),
       );
       return;
     }
 
     if (!_isBorrow && item.status == ItemStatus.available) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Barang ini sudah berada di ruang peralatan.')),
+        SnackBar(content: Text(tr('Barang ini sudah berada di ruang peralatan.'))),
       );
       return;
     }
@@ -351,7 +353,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${item.name} berhasil ${_isBorrow ? 'dipinjam' : 'dikembalikan'}.'),
+          content: Text(tr(_isBorrow ? '{name} berhasil dipinjam.' : '{name} berhasil dikembalikan.', {'name': item.name})),
         ),
       );
       Navigator.of(context).pop();
@@ -383,8 +385,8 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
                 ),
                 child: Text(
                   widget.pairingSession == null
-                      ? 'Transaksi ini dikonfirmasi di PC ruang peralatan. Anda dapat memindai langsung di komputer ini, atau membuat sesi sambungan ponsel dari dasbor.'
-                      : 'Transaksi ini tetap dikonfirmasi di PC ruang peralatan. Jika ponsel tersambung sudah memindai kode QR, tombol pindai akan memakai QR tersebut terlebih dahulu.',
+                      ? tr('Transaksi ini dikonfirmasi di PC ruang peralatan. Anda dapat memindai langsung di komputer ini, atau membuat sesi sambungan ponsel dari dasbor.')
+                      : tr('Transaksi ini tetap dikonfirmasi di PC ruang peralatan. Jika ponsel tersambung sudah memindai kode QR, tombol pindai akan memakai QR tersebut terlebih dahulu.'),
                   style: const TextStyle(
                     color: Color(0xFF183A37),
                     height: 1.5,
@@ -404,15 +406,15 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
             const SizedBox(height: 18),
             _StepCard(
               number: '1',
-              title: 'Pindai QR barang',
-              subtitle: 'Pemindaian dilakukan pertama agar sistem selalu tahu barang mana yang berpindah.',
+              title: tr('Pindai QR barang'),
+              subtitle: tr('Pemindaian dilakukan pertama agar sistem selalu tahu barang mana yang berpindah.'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   FilledButton.icon(
                     onPressed: _scanItem,
                     icon: const Icon(Icons.qr_code_scanner_rounded),
-                    label: Text(_scannedItem == null ? 'Pindai sekarang' : 'Pindai ulang'),
+                    label: Text(_scannedItem == null ? tr('Pindai sekarang') : tr('Pindai ulang')),
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(54),
                       backgroundColor: const Color(0xFF5B39EA),
@@ -434,7 +436,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
             _StepCard(
               number: '2',
               title: _actorLabel,
-              subtitle: 'Gunakan nama yang disarankan bila memungkinkan agar pencatatan tetap cepat dan konsisten.',
+              subtitle: tr('Gunakan nama yang disarankan bila memungkinkan agar pencatatan tetap cepat dan konsisten.'),
               child: FutureBuilder<List<AppUser>>(
                 future: _usersFuture,
                 builder: (context, snapshot) {
@@ -487,10 +489,10 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
                         textInputAction: TextInputAction.done,
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
-                          hintText: _isBorrow ? 'Contoh: Budi' : 'Contoh: Sinta',
+                          hintText: _isBorrow ? tr('Contoh: Budi') : tr('Contoh: Sinta'),
                           helperText: widget.currentUser == null
-                              ? 'Isian manual tetap diperbolehkan jika nama tidak ada di daftar.'
-                              : 'Masuk sebagai ${widget.currentUser!.name}. Anda dapat tetap memakai nama itu atau menggantinya.',
+                              ? tr('Isian manual tetap diperbolehkan jika nama tidak ada di daftar.')
+                              : tr('Masuk sebagai {name}. Anda dapat tetap memakai nama itu atau menggantinya.', {'name': widget.currentUser!.name}),
                           filled: true,
                           fillColor: const Color(0xFFF7F8F6),
                           border: OutlineInputBorder(
@@ -509,8 +511,8 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
               number: '3',
               title: _locationTitle,
               subtitle: _isBorrow
-                  ? 'Operator memilih line tujuan dari daftar tetap, bukan dengan mengetik.'
-                  : 'Pengembalian wajib menentukan rak yang tepat agar orang berikutnya dapat menemukannya dengan cepat.',
+                  ? tr('Operator memilih line tujuan dari daftar tetap, bukan dengan mengetik.')
+                  : tr('Pengembalian wajib menentukan rak yang tepat agar orang berikutnya dapat menemukannya dengan cepat.'),
               child: FutureBuilder<List<AllowedLocation>>(
                 future: _locationsFuture,
                 builder: (context, snapshot) {
@@ -525,8 +527,8 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
                   if (locations.isEmpty) {
                     return Text(
                       _isBorrow
-                          ? 'Belum ada line tujuan yang aktif.'
-                          : 'Belum ada lokasi rak yang aktif.',
+                          ? tr('Belum ada line tujuan yang aktif.')
+                          : tr('Belum ada lokasi rak yang aktif.'),
                       style: const TextStyle(
                         color: Color(0xFF5D7470),
                         fontWeight: FontWeight.w600,
@@ -566,7 +568,7 @@ class _ActionFlowScreenState extends State<ActionFlowScreen> {
             ),
             const SizedBox(height: 18),
             _SubmitPreview(
-              title: _isBorrow ? 'Sebelum konfirmasi' : 'Siap konfirmasi pengembalian',
+              title: _isBorrow ? tr('Sebelum konfirmasi') : tr('Siap konfirmasi pengembalian'),
               message: _submitHelperText,
               isReady: _canSubmit,
               item: _scannedItem,

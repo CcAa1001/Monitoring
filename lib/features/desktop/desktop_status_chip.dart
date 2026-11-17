@@ -4,25 +4,24 @@ class DesktopStatusChip extends StatelessWidget {
   const DesktopStatusChip({
     super.key,
     required this.label,
+    this.tone,
+    this.color,
   });
 
   final String label;
 
+  /// Explicit status tone; when null it is derived from [label].
+  final StatusTone? tone;
+
+  /// Non-status accent (e.g. a count badge). Overrides [tone] when set.
+  final Color? color;
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    Color fg = const Color(0xFF5B39EA);
-    Color bg = isDark ? const Color(0x334C35D8) : const Color(0x22B39DFF);
-    if (label == 'Tersedia' || label == 'Aktif') {
-      fg = const Color(0xFF16C098);
-      bg = isDark ? const Color(0x3320B78C) : const Color(0x2216C098);
-    } else if (label == 'Dipinjam' || label == 'Nonaktif' || label == 'Terlambat') {
-      fg = const Color(0xFFEA5455);
-      bg = isDark ? const Color(0x33C4494A) : const Color(0x22EA5455);
-    } else if (label == 'Segera jatuh tempo') {
-      fg = const Color(0xFFF59E0B);
-      bg = isDark ? const Color(0x33B7791F) : const Color(0x22F59E0B);
-    }
+    final colors = StatusColors.of(context);
+    final resolved = tone ?? statusToneForLabel(label);
+    final fg = color ?? colors.color(resolved);
+    final bg = color?.withValues(alpha: colors.backgroundAlpha) ?? colors.background(resolved);
 
     return Container(
       constraints: const BoxConstraints(minWidth: 110, minHeight: 36),

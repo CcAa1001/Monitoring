@@ -45,32 +45,32 @@ class _UserSelfSettingsDialogState extends State<UserSelfSettingsDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Pengaturan pengguna'),
+      title: Text(tr('Pengaturan pengguna')),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _nameController, label: 'Nama'),
+            _DialogField(controller: _nameController, label: tr('Nama')),
             const SizedBox(height: 10),
             TextField(
               controller: _badgeController,
               readOnly: true,
-              decoration: const InputDecoration(labelText: 'ID badge'),
+              decoration: InputDecoration(labelText: tr('ID badge')),
             ),
             const SizedBox(height: 10),
-            _DialogField(controller: _passwordController, label: 'Kata sandi'),
+            _DialogField(controller: _passwordController, label: tr('Kata sandi')),
           ],
         ),
       ),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Batal'),
+          child: Text(tr('Batal')),
         ),
         FilledButton(
           onPressed: _save,
-          child: const Text('Simpan'),
+          child: Text(tr('Simpan')),
         ),
       ],
     );

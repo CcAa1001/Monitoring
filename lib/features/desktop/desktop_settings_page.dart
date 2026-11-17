@@ -19,9 +19,9 @@ class DesktopSettingsPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView(
       children: <Widget>[
-        const DesktopSectionHeader(
-          title: 'Pengaturan',
-          subtitle: 'Tinjau status terminal, akun operator, dan sambungan ponsel saat ini.',
+        DesktopSectionHeader(
+          title: tr('Pengaturan'),
+          subtitle: tr('Tinjau status terminal, akun operator, dan sambungan ponsel saat ini.'),
         ),
         const SizedBox(height: 18),
         Row(
@@ -34,12 +34,12 @@ class DesktopSettingsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Profil terminal',
+                      tr('Profil terminal'),
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Nilai berikut menjelaskan sesi workstation yang sedang aktif di meja ini.',
+                      tr('Nilai berikut menjelaskan sesi workstation yang sedang aktif di meja ini.'),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 18),
@@ -48,15 +48,15 @@ class DesktopSettingsPage extends StatelessWidget {
                         Expanded(
                           child: _SettingsInfoCard(
                             icon: Icons.palette_outlined,
-                            label: 'Mode tema',
-                            value: themeMode == ThemeMode.dark ? 'Gelap' : 'Terang',
+                            label: tr('Mode tema'),
+                            value: themeMode == ThemeMode.dark ? tr('Gelap') : tr('Terang'),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: _SettingsInfoCard(
                             icon: Icons.person_outline_rounded,
-                            label: 'Masuk sebagai',
+                            label: tr('Masuk sebagai'),
                             value: currentUser.name,
                           ),
                         ),
@@ -64,7 +64,7 @@ class DesktopSettingsPage extends StatelessWidget {
                         Expanded(
                           child: _SettingsInfoCard(
                             icon: Icons.badge_outlined,
-                            label: 'ID badge',
+                            label: tr('ID badge'),
                             value: currentUser.badgeId,
                           ),
                         ),
@@ -88,12 +88,12 @@ class DesktopSettingsPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  'Kontrol sesi',
+                                  tr('Kontrol sesi'),
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Gunakan ini hanya jika operator terminal saat ini sudah selesai dan meja perlu kembali ke layar masuk.',
+                                  tr('Gunakan ini hanya jika operator terminal saat ini sudah selesai dan meja perlu kembali ke layar masuk.'),
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
@@ -103,7 +103,7 @@ class DesktopSettingsPage extends StatelessWidget {
                           FilledButton.icon(
                             onPressed: onLogout,
                             icon: const Icon(Icons.logout_rounded),
-                            label: const Text('Keluar dari terminal'),
+                            label: Text(tr('Keluar dari terminal')),
                           ),
                         ],
                       ),
@@ -120,20 +120,20 @@ class DesktopSettingsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Status sambungan ponsel',
+                      tr('Status sambungan ponsel'),
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       pairingSession == null
-                          ? 'Saat ini tidak ada ponsel yang tersambung.'
-                          : 'Terminal ini memiliki sesi sambungan ponsel aktif yang siap untuk pemindaian jarak jauh.',
+                          ? tr('Saat ini tidak ada ponsel yang tersambung.')
+                          : tr('Terminal ini memiliki sesi sambungan ponsel aktif yang siap untuk pemindaian jarak jauh.'),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 18),
                     _DesktopPairingSummary(
                       pairingSession: pairingSession,
-                      emptyMessage: 'Belum ada kode sambungan yang dibuat. Mulai sambungan dari dasbor saat ingin menghubungkan pemindai ponsel.',
+                      emptyMessage: tr('Belum ada kode sambungan yang dibuat. Mulai sambungan dari dasbor saat ingin menghubungkan pemindai ponsel.'),
                     ),
                   ],
                 ),

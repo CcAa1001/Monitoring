@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_language.dart';
 import '../../data/inventory_repository.dart';
 import '../../models/app_user.dart';
 import '../../models/pairing_session.dart';
@@ -69,13 +70,13 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
         _isConnected = true;
         _session = session;
         _selectedMode = _mapFromSessionMode(session.activeMode);
-        _statusText = 'Tersambung ke sesi PC ruang peralatan.';
+        _statusText = tr('Tersambung ke sesi PC ruang peralatan.');
       });
       _startPolling();
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _statusText = 'Kode sesi tidak ditemukan.';
+        _statusText = tr('Kode sesi tidak ditemukan.');
       });
     }
   }
@@ -91,7 +92,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
     final code = _extractPairCode(rawValue);
     if (code == null) {
       setState(() {
-        _statusText = 'QR tersebut bukan QR sambungan desktop.';
+        _statusText = tr('QR tersebut bukan QR sambungan desktop.');
       });
       return;
     }
@@ -152,16 +153,16 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
               setState(() {
                 _session = session;
                 _statusText = _selectedMode == _PairActionMode.returnItem
-                    ? 'Barang kembali masuk antrean di desktop. Lanjutkan memindai atau beralih ke desktop untuk menyelesaikan pengembalian.'
+                    ? tr('Barang kembali masuk antrean di desktop. Lanjutkan memindai atau beralih ke desktop untuk menyelesaikan pengembalian.')
                     : _selectedMode == _PairActionMode.registerItem
-                        ? 'QR barang baru dikirim ke desktop. Selesaikan registrasi barang di sana.'
-                        : 'Barang pinjam masuk antrean di desktop. Lanjutkan memindai atau beralih ke desktop untuk menyelesaikan peminjaman.';
+                        ? tr('QR barang baru dikirim ke desktop. Selesaikan registrasi barang di sana.')
+                        : tr('Barang pinjam masuk antrean di desktop. Lanjutkan memindai atau beralih ke desktop untuk menyelesaikan peminjaman.');
               });
               return true;
             } catch (_) {
               if (!mounted) return false;
               setState(() {
-                _statusText = 'Gagal mengirim pindaian ke sesi desktop.';
+                _statusText = tr('Gagal mengirim pindaian ke sesi desktop.');
               });
               return false;
             } finally {
@@ -204,15 +205,15 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
       setState(() {
         _session = updatedSession;
         _statusText = mode == _PairActionMode.returnItem
-            ? 'Mode kembali dikirim ke desktop. Antrean pengembalian akan segera terbuka di desktop.'
+            ? tr('Mode kembali dikirim ke desktop. Antrean pengembalian akan segera terbuka di desktop.')
             : mode == _PairActionMode.registerItem
-                ? 'Mode daftar barang dikirim ke desktop. Formulir barang baru akan terbuka di desktop setelah pindaian berikutnya.'
-                : 'Mode pinjam dikirim ke desktop. Antrean peminjaman akan segera terbuka di desktop.';
+                ? tr('Mode daftar barang dikirim ke desktop. Formulir barang baru akan terbuka di desktop setelah pindaian berikutnya.')
+                : tr('Mode pinjam dikirim ke desktop. Antrean peminjaman akan segera terbuka di desktop.');
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _statusText = 'Gagal mengirim mode yang dipilih ke sesi desktop.';
+        _statusText = tr('Gagal mengirim mode yang dipilih ke sesi desktop.');
       });
     } finally {
       if (mounted) {
@@ -236,13 +237,13 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
         _session = cleared;
         _isConnected = false;
         _selectedMode = null;
-        _statusText = 'Ponsel terputus dari sesi desktop.';
+        _statusText = tr('Ponsel terputus dari sesi desktop.');
       });
       _poller?.cancel();
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _statusText = 'Gagal memutuskan sambungan dari sesi desktop.';
+        _statusText = tr('Gagal memutuskan sambungan dari sesi desktop.');
       });
     }
   }
@@ -263,7 +264,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sambungkan pemindai')),
+      appBar: AppBar(title: Text(tr('Sambungkan pemindai'))),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: <Widget>[
@@ -280,14 +281,14 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const Text(
-                  'Gunakan ponsel sebagai pemindai',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
+                Text(
+                  tr('Gunakan ponsel sebagai pemindai'),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Ponsel dapat memindai, tetapi tidak dapat meminjam atau mengembalikan sendiri. Sesi PC di ruang peralatan harus menyetujui aksinya.',
-                  style: TextStyle(height: 1.5, color: Color(0xFFF0ECFF)),
+                Text(
+                  tr('Ponsel dapat memindai, tetapi tidak dapat meminjam atau mengembalikan sendiri. Sesi PC di ruang peralatan harus menyetujui aksinya.'),
+                  style: const TextStyle(height: 1.5, color: Color(0xFFF0ECFF)),
                 ),
                 const SizedBox(height: 16),
                 Container(
@@ -299,7 +300,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
                     border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
                   ),
                   child: Text(
-                    'Masuk sebagai ${widget.currentUser.name}',
+                    tr('Masuk sebagai {name}', {'name': widget.currentUser.name}),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
@@ -315,19 +316,19 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
                     minimumSize: const Size.fromHeight(52),
                   ),
                   icon: const Icon(Icons.qr_code_scanner_rounded),
-                  label: const Text('Pindai QR desktop'),
+                  label: Text(tr('Pindai QR desktop')),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Alternatif: masukkan kode sambungan desktop secara manual jika kamera tidak dapat memindai QR.',
-                  style: TextStyle(height: 1.5, color: Color(0xFFF0ECFF)),
+                Text(
+                  tr('Alternatif: masukkan kode sambungan desktop secara manual jika kamera tidak dapat memindai QR.'),
+                  style: const TextStyle(height: 1.5, color: Color(0xFFF0ECFF)),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _sessionController,
                   style: const TextStyle(color: Color(0xFF183A37), fontWeight: FontWeight.w700),
                   decoration: InputDecoration(
-                    hintText: 'Masukkan kode sambungan dari PC',
+                    hintText: tr('Masukkan kode sambungan dari PC'),
                     hintStyle: const TextStyle(color: Color(0xFF6A738A)),
                     filled: true,
                     fillColor: Colors.white,
@@ -344,7 +345,7 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
                     backgroundColor: Colors.white,
                     foregroundColor: const Color(0xFF5B39EA),
                   ),
-                  child: const Text('Sambungkan ke sesi PC'),
+                  child: Text(tr('Sambungkan ke sesi PC')),
                 ),
                 if (_statusText != null) ...<Widget>[
                   const SizedBox(height: 12),
@@ -377,14 +378,14 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
             icon: const Icon(Icons.qr_code_scanner_rounded),
             label: Text(
               _isBusy
-                  ? 'Mengirim pindaian...'
+                  ? tr('Mengirim pindaian...')
                   : _selectedMode == _PairActionMode.returnItem
-                      ? 'Pindai barang untuk dikembalikan'
+                      ? tr('Pindai barang untuk dikembalikan')
                   : _selectedMode == _PairActionMode.borrow
-                          ? 'Pindai barang untuk dipinjam'
+                          ? tr('Pindai barang untuk dipinjam')
                           : _selectedMode == _PairActionMode.registerItem
-                              ? 'Pindai QR untuk barang baru'
-                              : 'Pilih pinjam, kembali, atau daftar terlebih dahulu',
+                              ? tr('Pindai QR untuk barang baru')
+                              : tr('Pilih pinjam, kembali, atau daftar terlebih dahulu'),
             ),
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(54),
@@ -396,14 +397,14 @@ class _MobilePairScreenState extends State<MobilePairScreen> {
           OutlinedButton.icon(
             onPressed: _isConnected ? _refreshSession : null,
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Perbarui status sambungan'),
+            label: Text(tr('Perbarui status sambungan')),
           ),
           if (_isConnected) ...<Widget>[
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: _disconnect,
               icon: const Icon(Icons.link_off_rounded),
-              label: const Text('Putuskan ponsel'),
+              label: Text(tr('Putuskan ponsel')),
             ),
           ],
         ],
@@ -422,13 +423,13 @@ class _PhoneSessionCard extends StatelessWidget {
   String get _statusLabel {
     switch (session.status) {
       case PairingSessionStatus.waitingForPhone:
-        return 'Menunggu persetujuan desktop';
+        return tr('Menunggu persetujuan desktop');
       case PairingSessionStatus.connected:
-        return 'Siap memindai';
+        return tr('Siap memindai');
       case PairingSessionStatus.scanned:
-        return 'Pindaian terkirim ke desktop';
+        return tr('Pindaian terkirim ke desktop');
       case PairingSessionStatus.idle:
-        return 'Siaga';
+        return tr('Siaga');
     }
   }
 
@@ -439,30 +440,30 @@ class _PhoneSessionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE3E8F2)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
-            'Sambungan saat ini',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          Text(
+            tr('Sambungan saat ini'),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
-          Text('Kode sambungan: ${session.code}', style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text(tr('Kode sambungan: {code}', {'code': session.code}), style: const TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           Text('Status: $_statusLabel'),
           const SizedBox(height: 8),
           Text(
             session.connectedDeviceName == null
-                ? 'Desktop belum melaporkan perangkat.'
-                : 'Tersambung sebagai: ${session.connectedDeviceName}',
+                ? tr('Desktop belum melaporkan perangkat.')
+                : tr('Tersambung sebagai: {device}', {'device': session.connectedDeviceName}),
           ),
           const SizedBox(height: 8),
           Text(
             session.lastScannedQr == null || session.lastScannedQr!.isEmpty
-                ? 'Belum ada QR yang dikirim dari ponsel ini.'
-                : 'QR terakhir dikirim: ${session.lastScannedQr}',
+                ? tr('Belum ada QR yang dikirim dari ponsel ini.')
+                : tr('QR terakhir dikirim: {qr}', {'qr': session.lastScannedQr}),
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
         ],
@@ -489,70 +490,76 @@ class _ModePicker extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE3E8F2)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
-            'Pilih aksi',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          Text(
+            tr('Pilih aksi'),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Pilih aksi sebelum memindai agar desktop dapat menempatkan QR ke alur pinjam, kembali, atau daftar yang tepat.',
-            style: TextStyle(height: 1.5),
+          Text(
+            tr('Pilih aksi sebelum memindai agar desktop dapat menempatkan QR ke alur pinjam, kembali, atau daftar yang tepat.'),
+            style: const TextStyle(height: 1.5),
           ),
           const SizedBox(height: 16),
           Row(
             children: <Widget>[
               Expanded(
                 child: ChoiceChip(
-                  label: const Text('Pinjam'),
+                  label: Text(tr('Pinjam')),
                   selected: selectedMode == _PairActionMode.borrow,
                   onSelected: isUpdating ? null : (_) => onSelected(_PairActionMode.borrow),
                   selectedColor: const Color(0xFF5B39EA),
                   labelStyle: TextStyle(
-                    color: selectedMode == _PairActionMode.borrow ? Colors.white : const Color(0xFF183A37),
+                    color: selectedMode == _PairActionMode.borrow ? Colors.white : Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   side: BorderSide.none,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: ChoiceChip(
-                  label: const Text('Kembali'),
+                  label: Text(tr('Kembali')),
                   selected: selectedMode == _PairActionMode.returnItem,
                   onSelected: isUpdating ? null : (_) => onSelected(_PairActionMode.returnItem),
                   selectedColor: const Color(0xFFE58F2A),
-                  labelStyle: const TextStyle(
-                    color: Color(0xFF183A37),
+                  labelStyle: TextStyle(
+                    color: selectedMode == _PairActionMode.returnItem
+                        ? const Color(0xFF183A37)
+                        : Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   side: BorderSide.none,
-                  backgroundColor: const Color(0xFFF4F6FB),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: ChoiceChip(
-                  label: const Text('Daftar'),
+                  label: Text(tr('Daftar')),
                   selected: selectedMode == _PairActionMode.registerItem,
                   onSelected: isUpdating ? null : (_) => onSelected(_PairActionMode.registerItem),
                   selectedColor: const Color(0xFF16C098),
                   labelStyle: TextStyle(
-                    color: selectedMode == _PairActionMode.registerItem ? Colors.white : const Color(0xFF183A37),
+                    color: selectedMode == _PairActionMode.registerItem ? Colors.white : Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   side: BorderSide.none,
-                  backgroundColor: const Color(0xFFF4F6FB),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
                 ),
               ),
             ],

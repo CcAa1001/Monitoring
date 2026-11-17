@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../l10n/app_language.dart';
+import '../../l10n/language_toggle.dart';
 import '../../data/inventory_repository.dart';
 import '../../models/allowed_location.dart';
 import '../../models/app_user.dart';
@@ -13,6 +15,7 @@ import '../../models/item_category.dart';
 import '../../models/movement_record.dart';
 import '../../models/pairing_session.dart';
 import '../../services/inventory_report_service.dart';
+import '../../theme/status_colors.dart';
 import '../scan/scan_screen.dart';
 import '../workflow/action_flow_screen.dart';
 import '../workflow/transaction_queue_screen.dart';
@@ -78,6 +81,9 @@ class DesktopShellScreen extends StatefulWidget {
 }
 
 class _DesktopShellScreenState extends State<DesktopShellScreen> {
+  /// Desktop page content (top bar + panel) is capped at this width and centered.
+  static const double _maxContentWidth = 1100;
+
   DesktopMenuV2 _selectedMenu = DesktopMenuV2.dashboard;
   bool _isSidebarCollapsed = false;
   bool _isLoading = true;
@@ -99,8 +105,8 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
       name: 'Operator',
       permissions: <String>['Dasbor', 'Peminjaman', 'Pengembalian', 'Laporan', 'Riwayat', 'Barang'],
     ),
-    const _RoleDefinition(
-      name: 'Peninjau',
+    _RoleDefinition(
+      name: tr('Peninjau'),
       permissions: <String>['Dasbor', 'Laporan', 'Riwayat'],
     ),
   ];
@@ -314,16 +320,16 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus barang'),
-        content: Text('Hapus ${item.name} (${item.qrCode}) dari daftar barang?'),
+        title: Text(tr('Hapus barang')),
+        content: Text(tr('Hapus {name} ({qr}) dari daftar barang?', {'name': item.name, 'qr': item.qrCode})),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Batal'),
+            child: Text(tr('Batal')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -359,16 +365,16 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus kategori'),
-        content: Text('Hapus ${category.name}?'),
+        title: Text(tr('Hapus kategori')),
+        content: Text(tr('Hapus {name}?', {'name': category.name})),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Batal'),
+            child: Text(tr('Batal')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -402,16 +408,16 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus lokasi'),
-        content: Text('Hapus ${location.code}?'),
+        title: Text(tr('Hapus lokasi')),
+        content: Text(tr('Hapus {name}?', {'name': location.code})),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Batal'),
+            child: Text(tr('Batal')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -437,16 +443,16 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus pengguna'),
-        content: Text('Hapus ${user.name} (${user.badgeId})?'),
+        title: Text(tr('Hapus pengguna')),
+        content: Text(tr('Hapus {name} ({badge})?', {'name': user.name, 'badge': user.badgeId})),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Batal'),
+            child: Text(tr('Batal')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -460,18 +466,18 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Keluar dari terminal?'),
-        content: const Text(
-          'Aplikasi desktop akan kembali ke layar masuk ruang peralatan.',
+        title: Text(tr('Keluar dari terminal?')),
+        content: Text(
+          tr('Aplikasi desktop akan kembali ke layar masuk ruang peralatan.'),
         ),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Batal'),
+            child: Text(tr('Batal')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Keluar'),
+            child: Text(tr('Keluar')),
           ),
         ],
       ),
@@ -488,13 +494,13 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
       position: const RelativeRect.fromLTRB(1000, 88, 24, 0),
       items: <PopupMenuEntry<String>>[
         if (_displayUser.role != UserRole.admin)
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'settings',
-            child: Text('Pengaturan pengguna'),
+            child: Text(tr('Pengaturan pengguna')),
           ),
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'logout',
-          child: Text('Keluar'),
+          child: Text(tr('Keluar')),
         ),
       ],
     );
@@ -583,7 +589,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                 });
                               },
                               icon: const Icon(Icons.menu_open_rounded, color: Colors.white),
-                              tooltip: 'Bentangkan sidebar',
+                              tooltip: tr('Bentangkan sidebar'),
                             ),
                             const SizedBox(height: 12),
                             const CircleAvatar(
@@ -604,8 +610,9 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                 widget.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                                 color: Colors.white,
                               ),
-                              tooltip: 'Ganti tema',
+                              tooltip: tr('Ganti tema'),
                             ),
+                            const LanguageToggleButton(color: Colors.white, compact: true),
                           ],
                         )
                       : Column(
@@ -618,9 +625,9 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      const Text(
-                                        'Pusat monitoring',
-                                        style: TextStyle(
+                                      Text(
+                                        tr('Pusat monitoring'),
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 26,
                                           fontWeight: FontWeight.w800,
@@ -629,7 +636,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        DateFormat('EEEE, dd MMM yyyy', 'id_ID').format(DateTime.now()),
+                                        DateFormat('EEEE, dd MMM yyyy', dateLocale).format(DateTime.now()),
                                         style: const TextStyle(
                                           color: Color(0xFFE9E2FF),
                                           fontWeight: FontWeight.w600,
@@ -647,7 +654,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                         });
                                       },
                                       icon: const Icon(Icons.menu_open_rounded, color: Colors.white),
-                                      tooltip: 'Ciutkan sidebar',
+                                      tooltip: tr('Ciutkan sidebar'),
                                     ),
                                     IconButton(
                                       onPressed: widget.onToggleTheme,
@@ -655,8 +662,9 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                         widget.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                                         color: Colors.white,
                                       ),
-                                      tooltip: 'Ganti tema',
+                                      tooltip: tr('Ganti tema'),
                                     ),
+                                    const LanguageToggleButton(color: Colors.white, compact: true),
                                   ],
                                 ),
                               ],
@@ -668,13 +676,13 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                                 color: Colors.white.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Row(
+                              child: Row(
                                 children: <Widget>[
-                                  Icon(Icons.space_dashboard_rounded, color: Colors.white, size: 18),
-                                  SizedBox(width: 8),
+                                  const Icon(Icons.space_dashboard_rounded, color: Colors.white, size: 18),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    'Pusat kendali desktop',
-                                    style: TextStyle(
+                                    tr('Pusat kendali desktop'),
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -688,7 +696,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                 const SizedBox(height: 24),
                 if (!_isSidebarCollapsed)
                   Text(
-                    'MENU UTAMA',
+                    tr('MENU UTAMA'),
                     style: TextStyle(
                       color: isDark ? const Color(0xFF9FA8BF) : const Color(0xFF9197B3),
                       fontSize: 11,
@@ -725,13 +733,13 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                         child: IconButton(
                           onPressed: _confirmLogout,
                           icon: const Icon(Icons.logout_rounded),
-                          tooltip: 'Keluar',
+                          tooltip: tr('Keluar'),
                         ),
                       )
                     : OutlinedButton.icon(
                         onPressed: _confirmLogout,
                         icon: const Icon(Icons.logout_rounded),
-                        label: const Text('Keluar'),
+                        label: Text(tr('Keluar')),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(46),
                           alignment: Alignment.centerLeft,
@@ -757,16 +765,21 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
                         )
                       : Column(
                           children: <Widget>[
-                            _DesktopTopBar(
-                              pageTitle: _menuLabel(_selectedMenu),
-                              user: _displayUser,
-                              onOpenProfileMenu: _openProfileMenu,
+                            Center(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+                                child: _DesktopTopBar(
+                                  pageTitle: _menuLabel(_selectedMenu),
+                                  user: _displayUser,
+                                  onOpenProfileMenu: _openProfileMenu,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 20),
                             Expanded(
                               child: Center(
                                 child: ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 1400),
+                                  constraints: const BoxConstraints(maxWidth: _maxContentWidth),
                                   child: Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.fromLTRB(22, 22, 22, 24),
@@ -801,27 +814,27 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
   String _menuLabel(DesktopMenuV2 menu) {
     switch (menu) {
       case DesktopMenuV2.dashboard:
-        return 'Dasbor';
+        return tr('Dasbor');
       case DesktopMenuV2.borrow:
-        return 'Peminjaman';
+        return tr('Peminjaman');
       case DesktopMenuV2.returnItem:
-        return 'Pengembalian';
+        return tr('Pengembalian');
       case DesktopMenuV2.reports:
-        return 'Laporan';
+        return tr('Laporan');
       case DesktopMenuV2.history:
-        return 'Riwayat';
+        return tr('Riwayat');
       case DesktopMenuV2.items:
-        return 'Barang';
+        return tr('Barang');
       case DesktopMenuV2.categories:
-        return 'Kategori';
+        return tr('Kategori');
       case DesktopMenuV2.locations:
-        return 'Lokasi';
+        return tr('Lokasi');
       case DesktopMenuV2.roles:
-        return 'Peran';
+        return tr('Peran');
       case DesktopMenuV2.users:
-        return 'Pengguna';
+        return tr('Pengguna');
       case DesktopMenuV2.settings:
-        return 'Pengaturan';
+        return tr('Pengaturan');
     }
   }
 

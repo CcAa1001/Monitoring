@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_language.dart';
+import '../../l10n/language_toggle.dart';
 import '../../data/inventory_repository.dart';
 import '../../models/app_user.dart';
 
@@ -35,7 +37,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
     final password = _passwordController.text;
     if (badge.isEmpty || password.isEmpty) {
       setState(() {
-        _error = 'Masukkan ID badge dan kata sandi terlebih dahulu.';
+        _error = tr('Masukkan ID badge dan kata sandi terlebih dahulu.');
       });
       return;
     }
@@ -58,7 +60,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
 
     if (user == null) {
       setState(() {
-        _error = 'ID badge atau kata sandi salah.';
+        _error = tr('ID badge atau kata sandi salah.');
       });
       return;
     }
@@ -82,6 +84,10 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
+                      const Align(
+                        alignment: Alignment.centerRight,
+                        child: LanguageToggleButton(),
+                      ),
                       Container(
                         width: 56,
                         height: 56,
@@ -95,30 +101,30 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      const Text(
-                        'Masuk seluler',
-                        style: TextStyle(
+                      Text(
+                        tr('Masuk seluler'),
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Masuk untuk memantau peralatan dan menggunakan ponsel Anda sebagai pemindai yang tersambung ke desktop ruang peralatan.',
-                        style: TextStyle(height: 1.5),
+                      Text(
+                        tr('Masuk untuk memantau peralatan dan menggunakan ponsel Anda sebagai pemindai yang tersambung ke desktop ruang peralatan.'),
+                        style: const TextStyle(height: 1.5),
                       ),
                       const SizedBox(height: 20),
                       TextField(
                         controller: _badgeController,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(labelText: 'ID badge'),
+                        decoration: InputDecoration(labelText: tr('ID badge')),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
                         onSubmitted: (_) => _submit(),
-                        decoration: const InputDecoration(labelText: 'Kata sandi'),
+                        decoration: InputDecoration(labelText: tr('Kata sandi')),
                       ),
                       if (_error != null) ...<Widget>[
                         const SizedBox(height: 12),
@@ -141,7 +147,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                   height: 18,
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 )
-                              : const Text('Lanjutkan'),
+                              : Text(tr('Lanjutkan')),
                         ),
                       ),
                     ],

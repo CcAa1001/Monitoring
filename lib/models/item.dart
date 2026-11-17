@@ -1,3 +1,5 @@
+import '../l10n/app_language.dart';
+
 enum ItemStatus {
   available,
   borrowed,
@@ -56,7 +58,7 @@ class Item {
 
   String get conditionLabel {
     final value = condition?.trim();
-    return value == null || value.isEmpty ? 'Tidak ditentukan' : value;
+    return value == null || value.isEmpty ? tr('Tidak ditentukan') : value;
   }
 
   Item copyWith({

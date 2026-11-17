@@ -18,17 +18,17 @@ class DesktopReturnPage extends StatelessWidget {
       children: <Widget>[
         _DesktopTransactionHero(
           accentColors: const <Color>[Color(0xFF14B8A6), Color(0xFF0F9A8A)],
-          badge: 'Ruang kerja pengembalian',
-          title: 'Kembalikan barang melalui alur meja yang lebih teliti dan modern.',
+          badge: tr('Ruang kerja pengembalian'),
+          title: tr('Kembalikan barang melalui alur meja yang lebih teliti dan modern.'),
           description:
-              'Kumpulkan setiap pengembalian dalam satu antrean, jaga alur pemindai ponsel dan desktop tetap konsisten, dan tempatkan setiap barang kembali ke rak yang benar dengan tampilan yang lebih rapi.',
-          primaryLabel: 'Buka antrean kembali',
+              tr('Kumpulkan setiap pengembalian dalam satu antrean, jaga alur pemindai ponsel dan desktop tetap konsisten, dan tempatkan setiap barang kembali ke rak yang benar dengan tampilan yang lebih rapi.'),
+          primaryLabel: tr('Buka antrean kembali'),
           primaryIcon: Icons.assignment_return_rounded,
           primaryAction: onReturn,
-          secondaryLabel: pairingSession == null ? 'Sambungkan ponsel di dasbor' : 'Ponsel tersambung dan siap',
+          secondaryLabel: pairingSession == null ? tr('Sambungkan ponsel di dasbor') : tr('Ponsel tersambung dan siap'),
           secondaryIcon: Icons.phonelink_ring_rounded,
-          statusTitle: 'Stasiun pengembalian',
-          statusValue: pairingSession == null ? 'Hanya pemindai meja' : 'Dibantu ponsel',
+          statusTitle: tr('Stasiun pengembalian'),
+          statusValue: pairingSession == null ? tr('Hanya pemindai meja') : tr('Dibantu ponsel'),
         ),
         const SizedBox(height: 18),
         Row(
@@ -40,19 +40,19 @@ class DesktopReturnPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const _DesktopTransactionPanelHeader(
-                      title: 'Pilih cara barang kembali masuk ke antrean',
-                      caption: 'Pemindaian pengembalian dapat dilakukan di meja atau di dalam ruangan, tetapi tetap masuk ke satu antrean terkontrol untuk penentuan rak akhir.',
+                    _DesktopTransactionPanelHeader(
+                      title: tr('Pilih cara barang kembali masuk ke antrean'),
+                      caption: tr('Pemindaian pengembalian dapat dilakukan di meja atau di dalam ruangan, tetapi tetap masuk ke satu antrean terkontrol untuk penentuan rak akhir.'),
                     ),
                     const SizedBox(height: 20),
                     Row(
                       children: <Widget>[
                         Expanded(
                           child: _DesktopActionCard(
-                            title: 'Pemindai meja',
-                            description: 'Paling cocok untuk barang yang dikembalikan langsung ke ruang peralatan. Cara tercepat saat operator sudah berada di meja.',
+                            title: tr('Pemindai meja'),
+                            description: tr('Paling cocok untuk barang yang dikembalikan langsung ke ruang peralatan. Cara tercepat saat operator sudah berada di meja.'),
                             icon: Icons.qr_code_scanner_rounded,
-                            buttonLabel: 'Pindai di PC ini',
+                            buttonLabel: tr('Pindai di PC ini'),
                             onTap: onReturn,
                             primary: true,
                           ),
@@ -60,24 +60,24 @@ class DesktopReturnPage extends StatelessWidget {
                         const SizedBox(width: 16),
                         Expanded(
                           child: _DesktopActionCard(
-                            title: 'Pemindai ponsel tersambung',
+                            title: tr('Pemindai ponsel tersambung'),
                             description: pairingSession == null
-                                ? 'Sambungkan ponsel terlebih dahulu jika ingin memindai pengembalian di luar meja lalu mengirimnya ke sini.'
-                                : 'Ponsel ${pairingSession!.connectedDeviceName ?? 'pemindai'} dapat berkeliling dan terus mengirim pindaian pengembalian ke antrean meja.',
+                                ? tr('Sambungkan ponsel terlebih dahulu jika ingin memindai pengembalian di luar meja lalu mengirimnya ke sini.')
+                                : tr('Ponsel {device} dapat berkeliling dan terus mengirim pindaian pengembalian ke antrean meja.', {'device': pairingSession!.connectedDeviceName ?? tr('pemindai')}),
                             icon: Icons.smartphone_rounded,
-                            buttonLabel: pairingSession == null ? 'Belum tersambung' : 'Gunakan ponsel tersambung',
+                            buttonLabel: pairingSession == null ? tr('Belum tersambung') : tr('Gunakan ponsel tersambung'),
                             onTap: pairingSession == null ? null : onReturn,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 18),
-                    const _DesktopProcessStrip(
+                    _DesktopProcessStrip(
                       steps: <String>[
-                        'Pindai QR barang yang dikembalikan',
-                        'Tinjau setiap baris antrean',
-                        'Pilih lokasi rak akhir',
-                        'Konfirmasi pengembalian',
+                        tr('Pindai QR barang yang dikembalikan'),
+                        tr('Tinjau setiap baris antrean'),
+                        tr('Pilih lokasi rak akhir'),
+                        tr('Konfirmasi pengembalian'),
                       ],
                     ),
                   ],
@@ -91,14 +91,14 @@ class DesktopReturnPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const _DesktopTransactionPanelHeader(
-                      title: 'Ringkasan sambungan ponsel',
-                      caption: 'Ponsel yang tersambung menjaga pengembalian tetap berjalan tanpa harus membawa semuanya ke meja terlebih dahulu.',
+                    _DesktopTransactionPanelHeader(
+                      title: tr('Ringkasan sambungan ponsel'),
+                      caption: tr('Ponsel yang tersambung menjaga pengembalian tetap berjalan tanpa harus membawa semuanya ke meja terlebih dahulu.'),
                     ),
                     const SizedBox(height: 18),
                     _DesktopPairingSummary(
                       pairingSession: pairingSession,
-                      emptyMessage: 'Belum ada ponsel yang tersambung. Mulai sambungan dari dasbor untuk menampilkan QR desktop dan menghubungkan pemindai ponsel.',
+                      emptyMessage: tr('Belum ada ponsel yang tersambung. Mulai sambungan dari dasbor untuk menampilkan QR desktop dan menghubungkan pemindai ponsel.'),
                     ),
                   ],
                 ),
@@ -108,9 +108,9 @@ class DesktopReturnPage extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         if (role == UserRole.viewer)
-          const DesktopPanel(
+          DesktopPanel(
             child: Text(
-              'Akun ini dapat memantau dan meninjau aktivitas pengembalian, tetapi tidak dapat memulai antrean kembali. Gunakan akun operator atau admin untuk transaksi.',
+              tr('Akun ini dapat memantau dan meninjau aktivitas pengembalian, tetapi tidak dapat memulai antrean kembali. Gunakan akun operator atau admin untuk transaksi.'),
             ),
           ),
       ],
@@ -257,9 +257,9 @@ class _DesktopTransactionHero extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text(
-                    'Mode saat ini',
-                    style: TextStyle(
+                  Text(
+                    tr('Mode saat ini'),
+                    style: const TextStyle(
                       color: Color(0xFFF0ECFF),
                       fontWeight: FontWeight.w600,
                     ),
@@ -282,14 +282,14 @@ class _DesktopTransactionHero extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  const _DesktopHeroMiniStat(
-                    label: 'Gaya antrean',
-                    value: 'Baris terstruktur',
+                  _DesktopHeroMiniStat(
+                    label: tr('Gaya antrean'),
+                    value: tr('Baris terstruktur'),
                   ),
                   const SizedBox(height: 10),
-                  const _DesktopHeroMiniStat(
-                    label: 'Pengiriman',
-                    value: 'Satu langkah tinjau',
+                  _DesktopHeroMiniStat(
+                    label: tr('Pengiriman'),
+                    value: tr('Satu langkah tinjau'),
                   ),
                 ],
               ),
@@ -491,17 +491,17 @@ class _DesktopPairingSummary extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _DesktopPairingStat(label: 'Kode sambungan', value: pairingSession!.code),
+                _DesktopPairingStat(label: tr('Kode sambungan'), value: pairingSession!.code),
                 const SizedBox(height: 12),
                 _DesktopPairingStat(
-                  label: 'Perangkat',
+                  label: tr('Perangkat'),
                   value: (pairingSession!.connectedDeviceName ?? '').isEmpty
-                      ? 'Menunggu ponsel'
+                      ? tr('Menunggu ponsel')
                       : pairingSession!.connectedDeviceName!,
                 ),
                 const SizedBox(height: 12),
                 _DesktopPairingStat(
-                  label: 'Pindaian terakhir',
+                  label: tr('Pindaian terakhir'),
                   value: (pairingSession!.lastScannedQr ?? '').isEmpty ? '-' : pairingSession!.lastScannedQr!,
                 ),
               ],

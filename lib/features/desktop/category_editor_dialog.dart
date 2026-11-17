@@ -37,7 +37,7 @@ class _CategoryEditorDialogState extends State<CategoryEditorDialog> {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       setState(() {
-        _error = 'Nama kategori tidak boleh kosong.';
+        _error = tr('Nama kategori tidak boleh kosong.');
       });
       return;
     }
@@ -73,16 +73,16 @@ class _CategoryEditorDialogState extends State<CategoryEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.category == null ? 'Tambah kategori' : 'Ubah kategori'),
+      title: Text(widget.category == null ? tr('Tambah kategori') : tr('Ubah kategori')),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _nameController, label: 'Nama kategori'),
+            _DialogField(controller: _nameController, label: tr('Nama kategori')),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Aktif'),
+              title: Text(tr('Aktif')),
               value: _isActive,
               onChanged: (value) {
                 setState(() {
@@ -108,7 +108,7 @@ class _CategoryEditorDialogState extends State<CategoryEditorDialog> {
         ),
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Batal')),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(tr('Batal'))),
         FilledButton(
           onPressed: _isSaving ? null : _save,
           child: _isSaving
@@ -117,7 +117,7 @@ class _CategoryEditorDialogState extends State<CategoryEditorDialog> {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Simpan'),
+              : Text(tr('Simpan')),
         ),
       ],
     );

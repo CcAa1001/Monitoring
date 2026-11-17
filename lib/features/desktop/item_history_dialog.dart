@@ -14,20 +14,20 @@ class ItemHistoryDialog extends StatelessWidget {
     final label = <String>[
       item.name,
       'QR: ${item.qrCode}',
-      if ((item.serialNumber ?? '').isNotEmpty) 'No. seri: ${item.serialNumber}',
-      if ((item.brand ?? '').isNotEmpty) 'Merek: ${item.brand}',
+      if ((item.serialNumber ?? '').isNotEmpty) tr('No. seri: {serial}', {'serial': item.serialNumber}),
+      if ((item.brand ?? '').isNotEmpty) tr('Merek: {brand}', {'brand': item.brand}),
       if ((item.model ?? '').isNotEmpty) 'Model: ${item.model}',
     ].join('\n');
     await Clipboard.setData(ClipboardData(text: label));
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Teks label QR disalin.')),
+      SnackBar(content: Text(tr('Teks label QR disalin.'))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final formatter = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
+    final formatter = DateFormat('dd MMM yyyy, HH:mm', dateLocale);
     final dueLabel = item.expectedReturnAt == null ? '-' : formatter.format(item.expectedReturnAt!);
     return AlertDialog(
       title: Text(item.name),
@@ -64,14 +64,14 @@ class ItemHistoryDialog extends StatelessWidget {
                       spacing: 12,
                       runSpacing: 12,
                       children: <Widget>[
-                        _ItemProfileFact(label: 'Kode QR', value: item.qrCode),
-                        _ItemProfileFact(label: 'No. seri', value: item.serialNumber ?? '-'),
-                        _ItemProfileFact(label: 'Merek', value: item.brand ?? '-'),
+                        _ItemProfileFact(label: tr('Kode QR'), value: item.qrCode),
+                        _ItemProfileFact(label: tr('No. seri'), value: item.serialNumber ?? '-'),
+                        _ItemProfileFact(label: tr('Merek'), value: item.brand ?? '-'),
                         _ItemProfileFact(label: 'Model', value: item.model ?? '-'),
-                        _ItemProfileFact(label: 'Kategori', value: item.category),
-                        _ItemProfileFact(label: 'Kondisi', value: item.conditionLabel),
-                        _ItemProfileFact(label: 'Lokasi', value: item.currentLocation),
-                        _ItemProfileFact(label: 'Batas pengembalian', value: dueLabel),
+                        _ItemProfileFact(label: tr('Kategori'), value: item.category),
+                        _ItemProfileFact(label: tr('Kondisi'), value: item.conditionLabel),
+                        _ItemProfileFact(label: tr('Lokasi'), value: item.currentLocation),
+                        _ItemProfileFact(label: tr('Batas pengembalian'), value: dueLabel),
                       ],
                     ),
                   ),
@@ -79,32 +79,32 @@ class ItemHistoryDialog extends StatelessWidget {
               ),
               if ((item.notes ?? '').isNotEmpty) ...<Widget>[
                 const SizedBox(height: 18),
-                Text('Catatan perawatan', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                Text(tr('Catatan perawatan'), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
                 const SizedBox(height: 8),
                 Text(item.notes!, style: Theme.of(context).textTheme.bodyMedium),
               ],
               const SizedBox(height: 22),
-              Text('Riwayat pergerakan', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+              Text(tr('Riwayat pergerakan'), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
               const SizedBox(height: 12),
               if (movements.isEmpty)
-                const Text('Belum ada riwayat pergerakan untuk barang ini.')
+                Text(tr('Belum ada riwayat pergerakan untuk barang ini.'))
               else
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
-                    columns: const <DataColumn>[
-                      DataColumn(label: Text('Waktu')),
-                      DataColumn(label: Text('Aksi')),
-                      DataColumn(label: Text('Pelaku')),
-                      DataColumn(label: Text('Dari')),
-                      DataColumn(label: Text('Ke')),
-                      DataColumn(label: Text('Keterangan')),
+                    columns: <DataColumn>[
+                      DataColumn(label: Text(tr('Waktu'))),
+                      DataColumn(label: Text(tr('Aksi'))),
+                      DataColumn(label: Text(tr('Pelaku'))),
+                      DataColumn(label: Text(tr('Dari'))),
+                      DataColumn(label: Text(tr('Ke'))),
+                      DataColumn(label: Text(tr('Keterangan'))),
                     ],
                     rows: movements.map((movement) {
                       return DataRow(
                         cells: <DataCell>[
                           DataCell(Text(formatter.format(movement.createdAt))),
-                          DataCell(Text(movement.action == MovementAction.borrow ? 'Pinjam' : 'Kembali')),
+                          DataCell(Text(movement.action == MovementAction.borrow ? tr('Pinjam') : tr('Kembali'))),
                           DataCell(Text(movement.actorName)),
                           DataCell(Text(movement.fromLocation)),
                           DataCell(Text(movement.toLocation)),
@@ -122,11 +122,11 @@ class ItemHistoryDialog extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => _copyQrLabel(context),
           icon: const Icon(Icons.qr_code_2_rounded),
-          label: const Text('Salin label QR'),
+          label: Text(tr('Salin label QR')),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Tutup'),
+          child: Text(tr('Tutup')),
         ),
       ],
     );

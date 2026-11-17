@@ -42,18 +42,18 @@ class _RoleEditorDialogState extends State<RoleEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Tambah peran'),
+      title: Text(tr('Tambah peran')),
       content: SizedBox(
         width: 420,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _DialogField(controller: _nameController, label: 'Nama peran'),
+            _DialogField(controller: _nameController, label: tr('Nama peran')),
             const SizedBox(height: 12),
             ..._permissions.keys.map(
               (permission) => CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(permission),
+                title: Text(tr(permission)),
                 value: _permissions[permission],
                 onChanged: (value) {
                   setState(() {
@@ -68,11 +68,11 @@ class _RoleEditorDialogState extends State<RoleEditorDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Batal'),
+          child: Text(tr('Batal')),
         ),
         FilledButton(
           onPressed: _save,
-          child: const Text('Simpan'),
+          child: Text(tr('Simpan')),
         ),
       ],
     );

@@ -35,8 +35,8 @@ class _FlowBanner extends StatelessWidget {
           Expanded(
             child: Text(
               isBorrow
-                  ? 'Peminjaman dimulai dengan pindai, lalu satu ketukan untuk line yang tepat.'
-                  : 'Pengembalian dimulai dengan pindai, lalu satu ketukan untuk rak yang tepat.',
+                  ? tr('Peminjaman dimulai dengan pindai, lalu satu ketukan untuk line yang tepat.')
+                  : tr('Pengembalian dimulai dengan pindai, lalu satu ketukan untuk rak yang tepat.'),
               style: const TextStyle(
                 color: Color(0xFF183A37),
                 fontWeight: FontWeight.w700,
@@ -67,12 +67,12 @@ class _ReadinessNotice extends StatelessWidget {
     String message;
     if (canProceed) {
       message = isBorrow
-          ? 'Barang ini tersedia dan dapat dipinjam sekarang.'
-          : 'Barang ini sedang dipinjam, sehingga dapat dikembalikan ke rak.';
+          ? tr('Barang ini tersedia dan dapat dipinjam sekarang.')
+          : tr('Barang ini sedang dipinjam, sehingga dapat dikembalikan ke rak.');
     } else {
       message = isBorrow
-          ? 'Barang ini sedang dipinjam. Minta operator mengembalikannya sebelum dipinjam lagi.'
-          : 'Barang ini sudah tercatat tersedia di ruang peralatan.';
+          ? tr('Barang ini sedang dipinjam. Minta operator mengembalikannya sebelum dipinjam lagi.')
+          : tr('Barang ini sudah tercatat tersedia di ruang peralatan.');
     }
 
     return Container(
@@ -145,11 +145,11 @@ class _SubmitPreview extends StatelessWidget {
           ),
           if (item != null || actorName != null || selectedLocation != null) ...<Widget>[
             const SizedBox(height: 14),
-            if (item != null) _SummaryRow(label: 'Barang', value: item!.name),
-            if (actorName != null) _SummaryRow(label: isBorrow ? 'Peminjam' : 'Pengembali', value: actorName!),
+            if (item != null) _SummaryRow(label: tr('Barang'), value: item!.name),
+            if (actorName != null) _SummaryRow(label: isBorrow ? tr('Peminjam') : tr('Pengembali'), value: actorName!),
             if (selectedLocation != null)
               _SummaryRow(
-                label: isBorrow ? 'Line tujuan' : 'Lokasi rak',
+                label: isBorrow ? tr('Line tujuan') : tr('Lokasi rak'),
                 value: selectedLocation!,
               ),
           ],
@@ -214,13 +214,13 @@ class _PairingStatusCard extends StatelessWidget {
   String get _statusLabel {
     switch (session.status) {
       case PairingSessionStatus.waitingForPhone:
-        return 'Menunggu ponsel';
+        return tr('Menunggu ponsel');
       case PairingSessionStatus.connected:
-        return 'Ponsel tersambung';
+        return tr('Ponsel tersambung');
       case PairingSessionStatus.scanned:
-        return 'Pindaian diterima';
+        return tr('Pindaian diterima');
       case PairingSessionStatus.idle:
-        return 'Siaga';
+        return tr('Siaga');
     }
   }
 
@@ -242,7 +242,7 @@ class _PairingStatusCard extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Sambungan ponsel: ${session.code}',
+                  tr('Sambungan ponsel: {code}', {'code': session.code}),
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF183A37),
@@ -269,14 +269,14 @@ class _PairingStatusCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             session.connectedDeviceName == null
-                ? 'Belum ada ponsel yang tersambung.'
-                : 'Perangkat tersambung: ${session.connectedDeviceName}',
+                ? tr('Belum ada ponsel yang tersambung.')
+                : tr('Perangkat tersambung: {device}', {'device': session.connectedDeviceName}),
           ),
           const SizedBox(height: 6),
           Text(
             session.lastScannedQr == null || session.lastScannedQr!.isEmpty
-                ? 'Belum ada pindaian QR masuk.'
-                : 'QR masuk terakhir: ${session.lastScannedQr}',
+                ? tr('Belum ada pindaian QR masuk.')
+                : tr('QR masuk terakhir: {qr}', {'qr': session.lastScannedQr}),
             style: TextStyle(
               color: session.lastScannedQr == null || session.lastScannedQr!.isEmpty
                   ? const Color(0xFF5E6B82)
@@ -390,13 +390,13 @@ class _ScannedItemCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: (available ? const Color(0xFF16C098) : const Color(0xFFEA5455)).withValues(alpha: 0.14),
+                  color: StatusColors.of(context).background(itemStatusTone(item)),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  available ? 'Tersedia' : 'Dipinjam',
+                  available ? tr('Tersedia') : tr('Dipinjam'),
                   style: TextStyle(
-                    color: available ? const Color(0xFF16C098) : const Color(0xFFEA5455),
+                    color: StatusColors.of(context).color(itemStatusTone(item)),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -410,13 +410,13 @@ class _ScannedItemCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Lokasi saat ini: ${item.currentLocation}',
+            tr('Lokasi saat ini: {location}', {'location': item.currentLocation}),
             style: const TextStyle(color: Color(0xFF5D7470)),
           ),
           if (item.lastBorrowerName != null && item.lastBorrowerName!.trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: 4),
             Text(
-              'Peminjam terakhir: ${item.lastBorrowerName}',
+              tr('Peminjam terakhir: {name}', {'name': item.lastBorrowerName}),
               style: const TextStyle(color: Color(0xFF5D7470)),
             ),
           ],

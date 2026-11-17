@@ -36,6 +36,7 @@ class DesktopDashboardOverviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ready = items.where((item) => item.status == ItemStatus.available).length;
     final borrowed = items.where((item) => item.status == ItemStatus.borrowed).length;
+    final overdue = items.where((item) => item.isOverdue).length;
     final scansToday = movements.where((movement) {
       final now = DateTime.now();
       return movement.createdAt.year == now.year &&
@@ -54,18 +55,19 @@ class DesktopDashboardOverviewPage extends StatelessWidget {
           onReturn: onReturn,
           readyCount: ready,
           borrowedCount: borrowed,
+          overdueCount: overdue,
           scansToday: scansToday,
         ),
         const SizedBox(height: 18),
         Row(
           children: <Widget>[
-            Expanded(child: DesktopMetricCard(title: 'Barang tersedia', value: '$ready', icon: Icons.inventory_2_rounded)),
+            Expanded(child: DesktopMetricCard(title: tr('Barang tersedia'), value: '$ready', icon: Icons.inventory_2_rounded, tone: StatusTone.available)),
             const SizedBox(width: 12),
-            Expanded(child: DesktopMetricCard(title: 'Sedang dipinjam', value: '$borrowed', icon: Icons.call_made_rounded)),
+            Expanded(child: DesktopMetricCard(title: tr('Sedang dipinjam'), value: '$borrowed', icon: Icons.call_made_rounded, tone: StatusTone.borrowed)),
             const SizedBox(width: 12),
-            Expanded(child: DesktopMetricCard(title: 'Pengguna', value: '${users.length}', icon: Icons.people_alt_rounded)),
+            Expanded(child: DesktopMetricCard(title: tr('Pengguna'), value: '${users.length}', icon: Icons.people_alt_rounded)),
             const SizedBox(width: 12),
-            Expanded(child: DesktopMetricCard(title: 'Lokasi', value: '${locations.length}', icon: Icons.grid_view_rounded)),
+            Expanded(child: DesktopMetricCard(title: tr('Lokasi'), value: '${locations.length}', icon: Icons.grid_view_rounded)),
           ],
         ),
         const SizedBox(height: 18),
@@ -93,6 +95,7 @@ class _DashboardHeroPanel extends StatelessWidget {
     required this.onReturn,
     required this.readyCount,
     required this.borrowedCount,
+    required this.overdueCount,
     required this.scansToday,
   });
 
@@ -104,6 +107,7 @@ class _DashboardHeroPanel extends StatelessWidget {
   final VoidCallback? onReturn;
   final int readyCount;
   final int borrowedCount;
+  final int overdueCount;
   final int scansToday;
 
   @override
@@ -139,30 +143,27 @@ class _DashboardHeroPanel extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
-                    pairingSession == null ? 'Mode meja aktif' : 'Ponsel tersambung',
-                    style: TextStyle(
-                      color: const Color(0xFF5B39EA),
+                    pairingSession == null ? tr('Mode meja aktif') : tr('Ponsel tersambung'),
+                    style: const TextStyle(
+                      color: Color(0xFF5B39EA),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  'Kelola ruang peralatan dari satu dasbor yang lebih tertata.',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : const Color(0xFF1F2533),
-                    height: 1.1,
-                  ),
+                _LiveStatusHeadline(
+                  readyCount: readyCount,
+                  borrowedCount: borrowedCount,
+                  overdueCount: overdueCount,
                 ),
                 const SizedBox(height: 12),
                 Text(
                   userRole == UserRole.viewer
-                      ? 'Akun ini dalam mode pemantauan. Anda dapat meninjau aktivitas dan status koneksi ponsel, tetapi aksi pinjam dan kembalikan tetap terkunci.'
-                      : 'Mulai pindai dari meja, serahkan pemindaian ke ponsel yang tersambung, atau langsung masuk ke alur pinjam dan kembalikan tanpa meninggalkan halaman ini.',
+                      ? tr('Mode pemantauan: aksi pinjam dan kembalikan terkunci untuk akun ini.')
+                      : tr('Diperbarui otomatis · {count} pindaian hari ini', {'count': scansToday}),
                   style: TextStyle(
                     height: 1.6,
+                    fontWeight: FontWeight.w600,
                     color: isDark ? const Color(0xFFB4BDD4) : const Color(0xFF687189),
                   ),
                 ),
@@ -174,25 +175,25 @@ class _DashboardHeroPanel extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onStartPairing,
                       icon: const Icon(Icons.phonelink_setup_rounded),
-                      label: Text(pairingSession == null ? 'Sambungkan ponsel' : 'Buka QR sambungan'),
+                      label: Text(pairingSession == null ? tr('Sambungkan ponsel') : tr('Buka QR sambungan')),
                     ),
                     if (pairingSession != null)
                       OutlinedButton.icon(
                         onPressed: () => onDisconnectPairing(),
                         icon: const Icon(Icons.link_off_rounded),
-                        label: const Text('Putuskan ponsel'),
+                        label: Text(tr('Putuskan ponsel')),
                       ),
                     if (userRole != UserRole.viewer)
                       OutlinedButton.icon(
                         onPressed: onBorrow,
                         icon: const Icon(Icons.call_made_rounded),
-                        label: const Text('Alur pinjam'),
+                        label: Text(tr('Alur pinjam')),
                       ),
                     if (userRole != UserRole.viewer)
                       OutlinedButton.icon(
                         onPressed: onReturn,
                         icon: const Icon(Icons.assignment_return_rounded),
-                        label: const Text('Alur kembalikan'),
+                        label: Text(tr('Alur kembalikan')),
                       ),
                   ],
                 ),
@@ -215,7 +216,7 @@ class _DashboardHeroPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Ringkasan meja langsung',
+                    tr('Ringkasan meja langsung'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -225,30 +226,30 @@ class _DashboardHeroPanel extends StatelessWidget {
                   const SizedBox(height: 14),
                   Row(
                     children: <Widget>[
-                      Expanded(child: _DashboardInfoStat(label: 'Tersedia', value: '$readyCount')),
+                      Expanded(child: _DashboardInfoStat(label: tr('Tersedia'), value: '$readyCount', tone: StatusTone.available)),
                       const SizedBox(width: 10),
-                      Expanded(child: _DashboardInfoStat(label: 'Dipinjam', value: '$borrowedCount')),
+                      Expanded(child: _DashboardInfoStat(label: tr('Dipinjam'), value: '$borrowedCount', tone: StatusTone.borrowed)),
                       const SizedBox(width: 10),
-                      Expanded(child: _DashboardInfoStat(label: 'Pindaian hari ini', value: '$scansToday')),
+                      Expanded(child: _DashboardInfoStat(label: tr('Pindaian hari ini'), value: '$scansToday')),
                     ],
                   ),
                   const SizedBox(height: 14),
                   _DashboardInfoRow(
                     icon: Icons.qr_code_2_rounded,
-                    label: 'Kode sambungan',
-                    value: pairingSession?.code ?? 'Belum dibuat',
+                    label: tr('Kode sambungan'),
+                    value: pairingSession?.code ?? tr('Belum dibuat'),
                   ),
                   const SizedBox(height: 12),
                   _DashboardInfoRow(
                     icon: Icons.smartphone_rounded,
-                    label: 'Perangkat tersambung',
-                    value: pairingSession?.connectedDeviceName ?? 'Belum ada ponsel tersambung',
+                    label: tr('Perangkat tersambung'),
+                    value: pairingSession?.connectedDeviceName ?? tr('Belum ada ponsel tersambung'),
                   ),
                   const SizedBox(height: 12),
                   _DashboardInfoRow(
                     icon: Icons.flash_on_rounded,
-                    label: 'Pindaian terakhir',
-                    value: pairingSession?.lastScannedQr ?? 'Menunggu pindaian',
+                    label: tr('Pindaian terakhir'),
+                    value: pairingSession?.lastScannedQr ?? tr('Menunggu pindaian'),
                   ),
                 ],
               ),
@@ -305,8 +306,8 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _DashboardPanelHeader(
-            title: 'Pergerakan terbaru',
-            caption: 'Pantau pergerakan peralatan terbaru dengan pencarian dan filter aksi.',
+            title: tr('Pergerakan terbaru'),
+            caption: tr('Pantau pergerakan peralatan terbaru dengan pencarian dan filter aksi.'),
           ),
           const SizedBox(height: 18),
           Row(
@@ -315,9 +316,9 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
                 child: TextField(
                   controller: _searchController,
                   onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.search_rounded),
-                    hintText: 'Cari barang, QR, pelaku, lokasi, atau catatan',
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    hintText: tr('Cari barang, QR, pelaku, lokasi, atau catatan'),
                   ),
                 ),
               ),
@@ -326,10 +327,10 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
                 width: 170,
                 child: DropdownButtonFormField<String>(
                   initialValue: _filter,
-                  items: const <DropdownMenuItem<String>>[
-                    DropdownMenuItem(value: 'All', child: Text('Semua aktivitas')),
-                    DropdownMenuItem(value: 'Borrow', child: Text('Hanya pinjam')),
-                    DropdownMenuItem(value: 'Return', child: Text('Hanya kembalikan')),
+                  items: <DropdownMenuItem<String>>[
+                    DropdownMenuItem(value: 'All', child: Text(tr('Semua aktivitas'))),
+                    DropdownMenuItem(value: 'Borrow', child: Text(tr('Hanya pinjam'))),
+                    DropdownMenuItem(value: 'Return', child: Text(tr('Hanya kembalikan'))),
                   ],
                   onChanged: (value) {
                     if (value == null) return;
@@ -344,7 +345,7 @@ class _DashboardMovementPanelState extends State<_DashboardMovementPanel> {
           ),
           const SizedBox(height: 18),
           if (_filteredMovements.isEmpty)
-            const Text('Tidak ada pergerakan yang cocok dengan pencarian dan filter saat ini.')
+            Text(tr('Tidak ada pergerakan yang cocok dengan pencarian dan filter saat ini.'))
           else
             LayoutBuilder(
               builder: (context, constraints) {
@@ -453,8 +454,8 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _DashboardPanelHeader(
-            title: 'Ringkasan peralatan',
-            caption: 'Tinjau kondisi ruang saat ini dan langsung lakukan aksi pada barang.',
+            title: tr('Ringkasan peralatan'),
+            caption: tr('Tinjau kondisi ruang saat ini dan langsung lakukan aksi pada barang.'),
           ),
           const SizedBox(height: 18),
           Row(
@@ -463,9 +464,9 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
                 child: TextField(
                   controller: _searchController,
                   onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.search_rounded),
-                    hintText: 'Cari barang, QR, kategori, atau lokasi',
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    hintText: tr('Cari barang, QR, kategori, atau lokasi'),
                   ),
                 ),
               ),
@@ -474,10 +475,10 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
                 width: 170,
                 child: DropdownButtonFormField<String>(
                   initialValue: _filter,
-                  items: const <DropdownMenuItem<String>>[
-                    DropdownMenuItem(value: 'All', child: Text('Semua status')),
-                    DropdownMenuItem(value: 'Ready', child: Text('Tersedia')),
-                    DropdownMenuItem(value: 'Borrowed', child: Text('Dipinjam')),
+                  items: <DropdownMenuItem<String>>[
+                    DropdownMenuItem(value: 'All', child: Text(tr('Semua status'))),
+                    DropdownMenuItem(value: 'Ready', child: Text(tr('Tersedia'))),
+                    DropdownMenuItem(value: 'Borrowed', child: Text(tr('Dipinjam'))),
                   ],
                   onChanged: (value) {
                     if (value == null) return;
@@ -492,7 +493,7 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
           ),
           const SizedBox(height: 18),
           if (_filteredItems.isEmpty)
-            const Text('Tidak ada peralatan yang cocok dengan pencarian dan filter saat ini.')
+            Text(tr('Tidak ada peralatan yang cocok dengan pencarian dan filter saat ini.'))
           else
             ..._filteredItems.map((item) {
               return Padding(
@@ -500,7 +501,7 @@ class _DashboardEquipmentPanelState extends State<_DashboardEquipmentPanel> {
                 child: DesktopSimpleTile(
                   title: item.name,
                   subtitle: '${item.qrCode} | ${item.category} | ${item.currentLocation}',
-                  status: item.status == ItemStatus.available ? 'Tersedia' : 'Dipinjam',
+                  status: itemStatusLabel(item),
                   onHistory: () => widget.onViewItemHistory(item),
                   onEdit: widget.canManage ? () => widget.onEditItem?.call(item: item) : null,
                   onDelete: widget.canManage ? () => widget.onDeleteItem?.call(item) : null,
@@ -549,18 +550,61 @@ class _DashboardPanelHeader extends StatelessWidget {
   }
 }
 
-class _DashboardInfoStat extends StatelessWidget {
-  const _DashboardInfoStat({
-    required this.label,
-    required this.value,
+/// Live counts headline, e.g. "4 tersedia · 1 dipinjam · 0 terlambat".
+class _LiveStatusHeadline extends StatelessWidget {
+  const _LiveStatusHeadline({
+    required this.readyCount,
+    required this.borrowedCount,
+    required this.overdueCount,
   });
 
-  final String label;
-  final String value;
+  final int readyCount;
+  final int borrowedCount;
+  final int overdueCount;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = StatusColors.of(context);
+    final separatorColor = isDark ? const Color(0xFF5C6580) : const Color(0xFFC3C8D6);
+    const base = TextStyle(fontSize: 30, fontWeight: FontWeight.w800, height: 1.15);
+    TextSpan part(int count, String label, StatusTone tone) => TextSpan(
+          text: '$count $label',
+          style: base.copyWith(color: colors.color(tone)),
+        );
+    final separator = TextSpan(text: '  ·  ', style: base.copyWith(color: separatorColor));
+
+    return Text.rich(
+      TextSpan(
+        children: <InlineSpan>[
+          part(readyCount, tr('tersedia'), StatusTone.available),
+          separator,
+          part(borrowedCount, tr('dipinjam'), StatusTone.borrowed),
+          separator,
+          part(overdueCount, tr('terlambat'), overdueCount > 0 ? StatusTone.overdue : StatusTone.neutral),
+        ],
+      ),
+    );
+  }
+}
+
+class _DashboardInfoStat extends StatelessWidget {
+  const _DashboardInfoStat({
+    required this.label,
+    required this.value,
+    this.tone,
+  });
+
+  final String label;
+  final String value;
+  final StatusTone? tone;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final valueColor = tone == null
+        ? (isDark ? Colors.white : const Color(0xFF1F2533))
+        : StatusColors.of(context).color(tone!);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
@@ -581,7 +625,7 @@ class _DashboardInfoStat extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: isDark ? Colors.white : const Color(0xFF1F2533),
+              color: valueColor,
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -655,7 +699,7 @@ class _DashboardMovementTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final formatter = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
+    final formatter = DateFormat('dd MMM yyyy, HH:mm', dateLocale);
     final accent = record.action == MovementAction.borrow ? const Color(0xFF5B39EA) : const Color(0xFF14B8A6);
     return Container(
       padding: const EdgeInsets.all(18),
@@ -688,7 +732,7 @@ class _DashboardMovementTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  record.action == MovementAction.borrow ? 'Pinjam' : 'Kembali',
+                  record.action == MovementAction.borrow ? tr('Pinjam') : tr('Kembali'),
                   style: TextStyle(
                     color: accent,
                     fontWeight: FontWeight.w800,
@@ -712,7 +756,7 @@ class _DashboardMovementTile extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: _DashboardLocationPill(
-                  label: 'Dari',
+                  label: tr('Dari'),
                   value: record.fromLocation,
                 ),
               ),
@@ -721,7 +765,7 @@ class _DashboardMovementTile extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _DashboardLocationPill(
-                  label: 'Ke',
+                  label: tr('Ke'),
                   value: record.toLocation,
                 ),
               ),

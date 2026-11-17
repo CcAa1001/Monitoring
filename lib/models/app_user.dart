@@ -1,3 +1,5 @@
+import '../l10n/app_language.dart';
+
 enum UserRole {
   admin,
   operator,
@@ -13,7 +15,7 @@ extension UserRoleLabel on UserRole {
       case UserRole.operator:
         return 'Operator';
       case UserRole.viewer:
-        return 'Peninjau';
+        return tr('Peninjau');
     }
   }
 }

@@ -42,13 +42,13 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
   String get _statusLabel {
     switch (_session.status) {
       case PairingSessionStatus.waitingForPhone:
-        return 'Menunggu pindaian ponsel';
+        return tr('Menunggu pindaian ponsel');
       case PairingSessionStatus.connected:
-        return 'Ponsel tersambung';
+        return tr('Ponsel tersambung');
       case PairingSessionStatus.scanned:
-        return 'Pindaian barang diterima';
+        return tr('Pindaian barang diterima');
       case PairingSessionStatus.idle:
-        return 'Siaga';
+        return tr('Siaga');
     }
   }
 
@@ -94,18 +94,18 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'Sambungkan Pemindai Ponsel',
-                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
+                          tr('Sambungkan Pemindai Ponsel'),
+                          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'Pindai QR ini di aplikasi ponsel. Setelah itu, ponsel dapat terus mengirim pindaian barang ke sesi desktop ini.',
-                          style: TextStyle(height: 1.5),
+                          tr('Pindai QR ini di aplikasi ponsel. Setelah itu, ponsel dapat terus mengirim pindaian barang ke sesi desktop ini.'),
+                          style: const TextStyle(height: 1.5),
                         ),
                       ],
                     ),
@@ -152,10 +152,10 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                             style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 1.6),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Alternatif: jika kamera ponsel tidak dapat memindai QR desktop, operator tetap dapat mengetik kode ini secara manual.',
+                          Text(
+                            tr('Alternatif: jika kamera ponsel tidak dapat memindai QR desktop, operator tetap dapat mengetik kode ini secara manual.'),
                             textAlign: TextAlign.center,
-                            style: TextStyle(height: 1.5),
+                            style: const TextStyle(height: 1.5),
                           ),
                         ],
                       ),
@@ -166,11 +166,11 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const _DesktopPairStep(number: '1', text: 'Buka aplikasi ponsel dan ketuk Pindai QR desktop.'),
+                        _DesktopPairStep(number: '1', text: tr('Buka aplikasi ponsel dan ketuk Pindai QR desktop.')),
                         const SizedBox(height: 12),
-                        const _DesktopPairStep(number: '2', text: 'Arahkan kamera ponsel ke kode QR ini.'),
+                        _DesktopPairStep(number: '2', text: tr('Arahkan kamera ponsel ke kode QR ini.')),
                         const SizedBox(height: 12),
-                        const _DesktopPairStep(number: '3', text: 'Setelah tersambung, biarkan ponsel di layar pemindai dan pindai kode QR barang.'),
+                        _DesktopPairStep(number: '3', text: tr('Setelah tersambung, biarkan ponsel di layar pemindai dan pindai kode QR barang.')),
                         const SizedBox(height: 20),
                         Container(
                           width: double.infinity,
@@ -190,9 +190,9 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                               ),
                               const SizedBox(height: 10),
-                              Text('Ponsel tersambung: ${_session.connectedDeviceName ?? 'Belum tersambung'}'),
+                              Text(tr('Ponsel tersambung: {device}', {'device': _session.connectedDeviceName ?? tr('Belum tersambung')})),
                               const SizedBox(height: 8),
-                              Text('Pindaian terakhir diterima: ${_session.lastScannedQr ?? '-'}'),
+                              Text(tr('Pindaian terakhir diterima: {qr}', {'qr': _session.lastScannedQr ?? '-'})),
                             ],
                           ),
                         ),
@@ -200,13 +200,13 @@ class _DesktopPairingDialogState extends State<DesktopPairingDialog> {
                         OutlinedButton.icon(
                           onPressed: _refresh,
                           icon: const Icon(Icons.refresh_rounded),
-                          label: const Text('Perbarui status'),
+                          label: Text(tr('Perbarui status')),
                         ),
                         const SizedBox(height: 12),
                         FilledButton.icon(
                           onPressed: (_session.connectedDeviceName ?? '').isEmpty ? null : _disconnect,
                           icon: const Icon(Icons.link_off_rounded),
-                          label: const Text('Putuskan ponsel'),
+                          label: Text(tr('Putuskan ponsel')),
                         ),
                       ],
                     ),

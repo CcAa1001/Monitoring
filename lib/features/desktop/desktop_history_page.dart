@@ -52,19 +52,19 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
     await Clipboard.setData(ClipboardData(text: rows.join('\n')));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('CSV riwayat disalin ke clipboard.')),
+      SnackBar(content: Text(tr('CSV riwayat disalin ke clipboard.'))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final formatter = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
+    final formatter = DateFormat('dd MMM yyyy, HH:mm', dateLocale);
     final rows = _filteredMovements;
     return ListView(
       children: <Widget>[
-        const DesktopSectionHeader(
-          title: 'Riwayat',
-          subtitle: 'Catatan pergerakan secara rinci.',
+        DesktopSectionHeader(
+          title: tr('Riwayat'),
+          subtitle: tr('Catatan pergerakan secara rinci.'),
         ),
         const SizedBox(height: 18),
         DesktopPanel(
@@ -77,9 +77,9 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
                     child: TextField(
                       controller: _searchController,
                       onChanged: (_) => setState(() {}),
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search_rounded),
-                        hintText: 'Cari barang, QR, peminjam, lokasi, atau keterangan',
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.search_rounded),
+                        hintText: tr('Cari barang, QR, peminjam, lokasi, atau keterangan'),
                       ),
                     ),
                   ),
@@ -88,10 +88,10 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
                     width: 160,
                     child: DropdownButtonFormField<String>(
                       initialValue: _filter,
-                      items: const <DropdownMenuItem<String>>[
-                        DropdownMenuItem(value: 'All', child: Text('Semua')),
-                        DropdownMenuItem(value: 'Borrow', child: Text('Pinjam')),
-                        DropdownMenuItem(value: 'Return', child: Text('Kembali')),
+                      items: <DropdownMenuItem<String>>[
+                        DropdownMenuItem(value: 'All', child: Text(tr('Semua'))),
+                        DropdownMenuItem(value: 'Borrow', child: Text(tr('Pinjam'))),
+                        DropdownMenuItem(value: 'Return', child: Text(tr('Kembali'))),
                       ],
                       onChanged: (value) {
                         if (value != null) {
@@ -126,15 +126,15 @@ class _DesktopHistoryPageState extends State<DesktopHistoryPage> {
                       constraints: const BoxConstraints(minWidth: 1480),
                       child: DataTable(
                         columnSpacing: 24,
-                        columns: const <DataColumn>[
-                          DataColumn(label: Text('Nama barang')),
-                          DataColumn(label: Text('QR')),
-                          DataColumn(label: Text('Lokasi awal')),
-                          DataColumn(label: Text('Peminjam')),
-                          DataColumn(label: Text('Dari')),
-                          DataColumn(label: Text('Ke')),
-                          DataColumn(label: Text('Waktu')),
-                          DataColumn(label: Text('Keterangan')),
+                        columns: <DataColumn>[
+                          DataColumn(label: Text(tr('Nama barang'))),
+                          const DataColumn(label: Text('QR')),
+                          DataColumn(label: Text(tr('Lokasi awal'))),
+                          DataColumn(label: Text(tr('Peminjam'))),
+                          DataColumn(label: Text(tr('Dari'))),
+                          DataColumn(label: Text(tr('Ke'))),
+                          DataColumn(label: Text(tr('Waktu'))),
+                          DataColumn(label: Text(tr('Keterangan'))),
                         ],
                         rows: rows.map((record) {
                           return DataRow(

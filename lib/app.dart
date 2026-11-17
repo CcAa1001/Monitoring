@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'data/inventory_repository.dart';
 import 'features/root/responsive_root_screen.dart';
+import 'l10n/app_language.dart';
+import 'theme/status_colors.dart';
 
 class MonitoringApp extends StatefulWidget {
   const MonitoringApp({
@@ -92,10 +94,15 @@ class _MonitoringAppState extends State<MonitoringApp> {
           side: BorderSide(color: outline),
         ),
       ),
+      extensions: <ThemeExtension<dynamic>>[
+        isDark ? StatusColors.dark : StatusColors.light,
+      ],
+      // Every button and icon button is at least 48px tall (touch-target minimum).
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: Colors.white,
+          minimumSize: const Size(64, 48),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
@@ -103,13 +110,22 @@ class _MonitoringAppState extends State<MonitoringApp> {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: onSurface,
+          minimumSize: const Size(64, 48),
           side: BorderSide(color: outline),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(64, 48),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
+          minimumSize: const Size(48, 48),
           foregroundColor: onSurfaceSoft,
           hoverColor: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFF5B39EA).withValues(alpha: 0.06),
         ),
@@ -199,12 +215,37 @@ class _MonitoringAppState extends State<MonitoringApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    appLanguage.addListener(_onLanguageChanged);
+  }
+
+  @override
+  void dispose() {
+    appLanguage.removeListener(_onLanguageChanged);
+    super.dispose();
+  }
+
+  /// Rebuilds the whole widget tree in place (including pushed routes and
+  /// open dialogs) so every tr() call picks up the new language. Widget
+  /// state — the logged-in user, a scan queue, form input — is kept.
+  void _onLanguageChanged() {
+    setState(() {});
+    void markDirty(Element element) {
+      element.markNeedsBuild();
+      element.visitChildren(markDirty);
+    }
+
+    (context as Element).visitChildren(markDirty);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Monitoring Peralatan Pabrik',
+      title: tr('Monitoring Peralatan Pabrik'),
       debugShowCheckedModeBanner: false,
-      locale: const Locale('id', 'ID'),
-      supportedLocales: const <Locale>[Locale('id', 'ID')],
+      locale: appLocale,
+      supportedLocales: const <Locale>[Locale('id', 'ID'), Locale('en', 'US')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
