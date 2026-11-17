@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../models/allowed_location.dart';
 import '../models/app_user.dart';
 import '../models/item.dart';
@@ -127,14 +129,30 @@ class MockInventoryRepository implements InventoryRepository {
   final List<AppUser> _users;
   PairingSession? _pairingSession;
 
+  // In-process stand-in for Supabase Realtime: every mutation of items or
+  // movements notifies all listeners, mirroring a postgres_changes event.
+  final StreamController<void> _inventoryChanges = StreamController<void>.broadcast();
+
+  void _notifyInventoryChanged() {
+    // Deliver asynchronously, like a realtime event arriving over the socket.
+    scheduleMicrotask(() {
+      if (!_inventoryChanges.isClosed) _inventoryChanges.add(null);
+    });
+  }
+
+  @override
+  Stream<void> watchInventoryChanges() => _inventoryChanges.stream;
+
   @override
   Future<void> addItem(Item item) async {
     _items.insert(0, item);
+    _notifyInventoryChanged();
   }
 
   @override
   Future<void> deleteItem(String itemId) async {
     _items.removeWhere((item) => item.id == itemId);
+    _notifyInventoryChanged();
   }
 
   @override
@@ -170,6 +188,7 @@ class MockInventoryRepository implements InventoryRepository {
         description: description,
       ),
     );
+    _notifyInventoryChanged();
   }
 
   @override
@@ -245,6 +264,7 @@ class MockInventoryRepository implements InventoryRepository {
     final index = _items.indexWhere((element) => element.id == item.id);
     if (index == -1) return;
     _items[index] = item;
+    _notifyInventoryChanged();
   }
 
   @override
@@ -443,5 +463,6 @@ class MockInventoryRepository implements InventoryRepository {
         description: description,
       ),
     );
+    _notifyInventoryChanged();
   }
 }

@@ -80,6 +80,14 @@ abstract class InventoryRepository {
   Future<PairingSession> disconnectPairingSession({
     required String sessionCode,
   });
+
+  /// Emits whenever a row in `items` or `movements` changes, including
+  /// changes made by other devices. Bursts of changes (e.g. a borrow that
+  /// updates an item and inserts a movement) are coalesced into one event.
+  ///
+  /// Each listener gets its own underlying subscription, which is released
+  /// when the listener's [StreamSubscription] is cancelled.
+  Stream<void> watchInventoryChanges();
 }
 
 class InventoryRepositoryFactory {

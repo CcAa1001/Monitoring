@@ -84,6 +84,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
   String? _loadError;
   PairingSession? _pairingSession;
   Timer? _pairingPoller;
+  StreamSubscription<void>? _inventorySubscription;
   List<Item> _items = <Item>[];
   List<MovementRecord> _movements = <MovementRecord>[];
   List<AllowedLocation> _locations = <AllowedLocation>[];
@@ -125,6 +126,25 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
     super.initState();
     _displayUser = widget.currentUser;
     _load();
+    _inventorySubscription = widget.repository.watchInventoryChanges().listen(
+          (_) => _reloadInventory(),
+          onError: (_) {},
+        );
+  }
+
+  /// Silent refresh of items and movements after a realtime change.
+  Future<void> _reloadInventory() async {
+    try {
+      final items = await widget.repository.getItems();
+      final movements = await widget.repository.getRecentMovements();
+      if (!mounted) return;
+      setState(() {
+        _items = items;
+        _movements = movements;
+      });
+    } catch (_) {
+      // Keep showing the last known data; the next change or manual reload retries.
+    }
   }
 
   Future<void> _load() async {
@@ -507,6 +527,7 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
   @override
   void dispose() {
     _pairingPoller?.cancel();
+    _inventorySubscription?.cancel();
     super.dispose();
   }
 

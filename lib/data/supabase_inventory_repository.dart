@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/allowed_location.dart';
@@ -548,6 +550,54 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'notes': item.notes,
       'expected_return_at': item.expectedReturnAt?.toIso8601String(),
     };
+  }
+
+  int _realtimeChannelCounter = 0;
+
+  @override
+  Stream<void> watchInventoryChanges() {
+    late final StreamController<void> controller;
+    RealtimeChannel? channel;
+    Timer? debounce;
+
+    void notify() {
+      debounce?.cancel();
+      debounce = Timer(const Duration(milliseconds: 300), () {
+        if (!controller.isClosed) controller.add(null);
+      });
+    }
+
+    controller = StreamController<void>(
+      onListen: () {
+        _realtimeChannelCounter++;
+        final topic = 'inventory-changes-${DateTime.now().microsecondsSinceEpoch}-$_realtimeChannelCounter';
+        channel = _client
+            .channel(topic)
+            .onPostgresChanges(
+              event: PostgresChangeEvent.all,
+              schema: 'public',
+              table: 'items',
+              callback: (_) => notify(),
+            )
+            .onPostgresChanges(
+              event: PostgresChangeEvent.all,
+              schema: 'public',
+              table: 'movements',
+              callback: (_) => notify(),
+            )
+            .subscribe();
+      },
+      onCancel: () async {
+        debounce?.cancel();
+        final active = channel;
+        channel = null;
+        if (active != null) {
+          await _client.removeChannel(active);
+        }
+      },
+    );
+
+    return controller.stream;
   }
 
   Future<void> _writeAudit({

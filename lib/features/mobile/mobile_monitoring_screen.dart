@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -32,17 +34,37 @@ class _MobileMonitoringScreenState extends State<MobileMonitoringScreen> {
   final TextEditingController _searchController = TextEditingController();
   late Future<_MobileData> _future;
   int _selectedIndex = 0;
+  StreamSubscription<void>? _inventorySubscription;
 
   @override
   void initState() {
     super.initState();
     _future = _load();
+    _inventorySubscription = widget.repository.watchInventoryChanges().listen(
+          (_) => _reloadSilently(),
+          onError: (_) {},
+        );
   }
 
   @override
   void dispose() {
+    _inventorySubscription?.cancel();
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// Realtime refresh: fetch first, then swap in the completed data so the
+  /// FutureBuilder keeps showing the current list instead of a spinner.
+  Future<void> _reloadSilently() async {
+    try {
+      final data = await _load();
+      if (!mounted) return;
+      setState(() {
+        _future = Future<_MobileData>.value(data);
+      });
+    } catch (_) {
+      // Keep showing the last known data.
+    }
   }
 
   Future<_MobileData> _load() async {
